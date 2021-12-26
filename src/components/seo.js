@@ -44,6 +44,10 @@ export default function SEO({
   return (
     <Head>
       <title>{title}</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap" rel="stylesheet" />
+      
       {metaData.map(({ name, content }, i) => (
         <meta key={i} name={name} content={content} />
       ))}

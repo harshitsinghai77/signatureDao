@@ -50,7 +50,7 @@ const Banner = () => {
             </Flex>
           </Box>
           <Flex as="figure" sx={styles.bannerImage}>
-            <Image src={illustration} alt="illustration" />
+            <h1 sx={styles.signatureText}>Something Something</h1>
           </Flex>
         </Box>
       </Container>
@@ -71,7 +71,7 @@ const styles = {
     display: ['block', null, null, null, 'grid'],
     gridTemplateColumns: [null, null, null, null, '1fr 1fr', '0.95fr 1.05fr'],
     alignItems: 'center',
-    minHeight: ['auto', null, null, null, '38vh', '100vh'],
+    minHeight: ['auto', null, null, null, '38vh', '80vh'],
     pt: [null, null, null, 8, 0, 9, null],
     '@media only screen and (min-width:1900px)': {
       pt: 10,
@@ -144,9 +144,14 @@ const styles = {
       },
     },
   },
+  signatureText: {
+    fontFamily: 'Gochi Hand, cursive',
+    fontSize: ['38px', null, null, null, 55],
+  },
   bannerImage: {
     alignItems: 'center',
-    mt: [9, null, null, null, 0],
+    justifyContent: 'center',
+    mt: [0, null, null, null, 0],
     img: {
       maxWidth: [null, null, null, '80%', '100%'],
       m: [null, null, null, '0 auto', 0],

@@ -19,7 +19,7 @@ const SubscriptionForm = ({ buttonLabel, ...props }) => {
         id={`email-${id}`}
         placeholder="Enter Email address"
       />
-      <Button>{buttonLabel ?? 'Get Started'}</Button>
+      <Button>{buttonLabel ?? 'Claim NFT'}</Button>
     </Flex>
   );
 };

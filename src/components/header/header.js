@@ -26,7 +26,7 @@ export default function Header() {
   return (
     <DrawerProvider>
       <Box sx={styles.headerWrapper}>
-        <Sticky enabled={true} top={0} activeClass="is-sticky" innerZ={100}>
+        <Sticky enabled={false} top={0} activeClass="is-sticky" innerZ={100}>
           <Box
             as="header"
             variant="layout.header"
@@ -57,12 +57,8 @@ export default function Header() {
                   </Box>
                 </Flex>
                 <Flex sx={styles.buttonGroup}>
-                  <button sx={styles.login}>
-                    <Image src={lock} alt="lock icon" />
-                    Login
-                  </button>
                   <Button variant="text" sx={styles.getStarted}>
-                    Get Started
+                    Connect
                   </Button>
                 </Flex>
                 <NavbarDrawer />
@@ -77,9 +73,9 @@ export default function Header() {
 
 const styles = {
   headerWrapper: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#FFFCF7',
     header: {
-      position: 'fixed',
+      position: 'relative',
       left: 0,
       right: 0,
       py: [4],
