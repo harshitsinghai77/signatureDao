@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "framer-motion": "^2.9.5",
+    "ipfs-http-client": "^55.0.0",
     "next": "^10.0.3",
     "next-compose-plugins": "^2.2.1",
     "next-optimized-images": "^2.6.2",
@@ -23,6 +24,7 @@
     "react-icons": "^4.1.0",
     "react-responsive": "^8.2.0",
     "react-scroll": "^1.8.1",
+    "react-signature-canvas": "^1.0.3",
     "react-stickynode": "^3.0.4",
     "swiper": "^6.3.5",
     "theme-ui": "^0.3.4"

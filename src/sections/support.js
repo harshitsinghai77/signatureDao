@@ -1,25 +1,46 @@
 /** @jsx jsx */
-import { jsx, Container, Grid, Box, Flex, Heading, Text } from 'theme-ui';
-import Image from 'components/image';
-import support from 'assets/images/support.png';
-import rightArrow from 'assets/images/icons/right-arrow.png';
+import {
+  jsx,
+  Container,
+  Grid,
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Button,
+} from "theme-ui";
+import { useRef } from "react";
+import SignatureCanvas from "react-signature-canvas";
+
+import Image from "components/image";
+import support from "assets/images/support.png";
+import rightArrow from "assets/images/icons/right-arrow.png";
 
 const data = [
   {
     id: 1,
     icon: support,
-    title: 'Do you need help support',
+    title: "Do you need help support",
     description: `Get your website ads tests delivered at let collect sample from the victory of the update managements services.`,
   },
   {
     id: 2,
     icon: support,
-    title: 'Do you need help support',
+    title: "Do you need help support",
     description: `Get your website ads tests delivered at let collect sample from the victory of the update managements services.`,
   },
 ];
 
 const Support = () => {
+  const refSignatureRef = useRef(null);
+
+  const trimSignature = () => {
+    const trimmedSignature = refSignatureRef
+      .getTrimmedCanvas()
+      .toDataURL("image/png");
+    console.log("trimmedSignature", trimmedSignature);
+  };
+
   return (
     <Box as="section" id="support" sx={styles.section}>
       <Container>
@@ -37,6 +58,14 @@ const Support = () => {
               </Box>
             </Flex>
           ))}
+          <Box sx={styles.signatureCanvas}>
+            <SignatureCanvas
+              ref={refSignatureRef}
+              penColor="black"
+              canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+            />
+            <Button onClick={trimSignature}>Trim</Button>
+          </Box>
         </Grid>
       </Container>
     </Box>
@@ -51,54 +80,57 @@ const styles = {
     pb: [7, null, null, 8, null, 9, 10],
   },
   grid: {
-    gap: ['30px 30px'],
-    justifyContent: 'center',
+    gap: ["30px 30px"],
+    justifyContent: "center",
     gridTemplateColumns: [
-      'repeat(1, 1fr)',
+      "repeat(1, 1fr)",
       null,
       null,
-      'repeat(2, 1fr)',
+      "repeat(2, 1fr)",
       null,
-      'repeat(2, 540px)',
+      "repeat(2, 540px)",
     ],
   },
   supportItem: {
-    backgroundColor: '#F6F8FB',
+    backgroundColor: "#F6F8FB",
     borderRadius: 7,
-    flexDirection: ['column', null, null, null, null, 'row'],
-    alignItems: 'flex-start',
-    p: ['25px 25px 20px', null, null, null, '35px 30px', '45px 40px 50px'],
-    transition: '0.3s ease-in-out 0s',
-    ':hover': {
-      backgroundColor: 'white',
-      boxShadow: '0px 15px 60px rgba(63, 90, 130, 0.12)',
+    flexDirection: ["column", null, null, null, null, "row"],
+    alignItems: "flex-start",
+    p: ["25px 25px 20px", null, null, null, "35px 30px", "45px 40px 50px"],
+    transition: "0.3s ease-in-out 0s",
+    ":hover": {
+      backgroundColor: "white",
+      boxShadow: "0px 15px 60px rgba(63, 90, 130, 0.12)",
     },
   },
   media: {
-    alignItems: 'center',
+    alignItems: "center",
     mr: [6],
     mb: [5, null, null, null, null, 0],
     minWidth: [80],
     img: {
-      maxWidth: [60, null, null, null, null, '100%'],
+      maxWidth: [60, null, null, null, null, "100%"],
     },
   },
   content: {
-    mt: ['-7px'],
+    mt: ["-7px"],
     h2: {
       fontWeight: 700,
       fontSize: [2, null, null, null, 4],
       lineHeight: 1.5,
-      color: 'textSecondary',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      color: "textSecondary",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
     p: {
       fontSize: [1, null, null, null, 15],
       lineHeight: [2.13],
-      color: 'headingSecondary',
+      color: "headingSecondary",
       mt: [3],
     },
+  },
+  signatureCanvas: {
+    backgroundColor: "primary",
   },
 };
