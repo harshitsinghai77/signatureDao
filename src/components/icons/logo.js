@@ -124,7 +124,6 @@ const Logo = ({ isWhite, ...props }) => {
   );
   const something = renderToStaticMarkup(svgImage);
   const encodedStringImage = Buffer.from(something).toString("base64");
-  console.log(`data:image/svg+xml;base64,${encodedStringImage}`);
   return svgImage;
 };
 

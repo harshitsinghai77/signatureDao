@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   jsx,
   Box,
@@ -39,7 +39,20 @@ const logos = [
 ];
 
 const Banner = () => {
-  const [signature, setSignature] = useState("Your Signature");
+  const [signature, setSignature] = useState("");
+  const [randomName, setRandomName] = useState("");
+  const [elegible, setElegible] = useState(true);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+
+  function changedValue(value) {
+    setSignature(value);
+    if (elegible) {
+      setTotalPrice(value.length * 1);
+    } else {
+      setTotalPrice(value.length * 5);
+    }
+  }
 
   const onClaimNFT = async (e) => {
     e.preventDefault();
@@ -55,6 +68,22 @@ const Banner = () => {
     const ipfsNFTMetaData = await addDataToIPFS(nftMetadata);
     console.log("ipfsNFTMetaData: ", ipfsNFTMetaData);
   };
+
+  // Create a function to get random names using API call
+  const getRandomName = async () => {
+    const response = await fetch(
+      "https://randomuser.me/api/"
+    );
+    const data = await response.json();
+    console.log("data: ", data.results[0].name.first + " " + data.results[0].name.last);
+    
+    setRandomName(data.results[0].name.first + " " + data.results[0].name.last);
+  };
+
+  // create useEffect and call getRandomName function
+  useEffect(() => {
+    getRandomName();
+  }, []);
 
   return (
     <Box as="section" id="home" sx={styles.section}>
@@ -72,24 +101,35 @@ const Banner = () => {
                 type="text"
                 placeholder="Enter Your Signature"
                 value={signature || ""}
-                onChange={(event) => setSignature(event.target.value)}
+                onChange={(event) => changedValue(event.target.value)}
               />
               <Button onClick={onClaimNFT}>Claim NFT</Button>
             </Flex>
 
             <Flex sx={styles.sponsoredBy}>
-              <Text as="span">Sponsored by:</Text>
-              <Flex sx={styles.sponsor}>
-                {logos?.map((logo, index) => (
-                  <Flex as="figure" key={index}>
-                    <Image src={logo.src} alt={logo.name} />
-                  </Flex>
-                ))}
-              </Flex>
+              {/* condition based on elegible */}
+              { elegible ? (
+                  <Text as="p">
+                    <strong>
+                      You are elegible for a discount on your NFT signature.
+                    </strong>
+                  </Text>
+                  )
+                  :
+                  <Text as="p">
+                    <strong>
+                      You are not elegible for a discounted signature.
+                    </strong>
+                  </Text>
+              }
+
+              <Text as="span">MATIC to pay : {totalPrice}</Text>
+
             </Flex>
           </Box>
           <Flex as="figure" sx={styles.bannerImage}>
-            <h1 sx={styles.signatureText}>{signature}</h1>
+            {/* Get a random name for signature using an api call */}
+            <h1 sx={styles.signatureText}>{signature ? signature: randomName}</h1>
           </Flex>
         </Box>
       </Container>

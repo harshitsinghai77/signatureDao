@@ -16,16 +16,16 @@ const data = [
   {
     id: 1,
     tabPane: [
-      {
+      { 
         icon: <Currency />,
-        title: 'Budget Overview',
+        title: 'About',
       },
     ],
     tabContent: [
       {
         image: dashboard,
-        title: `First quality feature that boost your website rank & performance`,
-        description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
+        title: `Personalized, one and only signature NFT`,
+        description: `Grab your spot on The Million Signature DAO Mega-NFT. Discounts for popular NFT owners, including CryptoPunks, CryptoKitties, Bored Ape Yacht Club, Adidas Originals, PUNKS Comic, Loot, and many more!`,
         readMore: '#introduce-quality',
       },
     ],
@@ -35,7 +35,7 @@ const data = [
     tabPane: [
       {
         icon: <Cog />,
-        title: 'Create & adjust',
+        title: 'Vision',
       },
     ],
     tabContent: [
@@ -52,7 +52,7 @@ const data = [
     tabPane: [
       {
         icon: <PieChart />,
-        title: 'View Reports',
+        title: 'Tokenomics',
       },
     ],
     tabContent: [
@@ -69,7 +69,7 @@ const data = [
     tabPane: [
       {
         icon: <Suitcase />,
-        title: 'Optimize website',
+        title: 'Whitepaper',
       },
     ],
     tabContent: [
@@ -86,7 +86,24 @@ const data = [
     tabPane: [
       {
         icon: <BarChart />,
-        title: 'Custom Dashboard',
+        title: 'DAO',
+      },
+    ],
+    tabContent: [
+      {
+        image: dashboard,
+        title: `Fifth quality feature that boost your website rank & performance`,
+        description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
+        readMore: '#introduce-quality',
+      },
+    ],
+  },
+  {
+    id: 6,
+    tabPane: [
+      {
+        icon: <BarChart />,
+        title: 'Airdrop',
       },
     ],
     tabContent: [
