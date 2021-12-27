@@ -18,7 +18,7 @@ const data = [
     tabPane: [
       { 
         icon: <Currency />,
-        title: 'About',
+        title: 'About Us',
       },
     ],
     tabContent: [
@@ -35,14 +35,14 @@ const data = [
     tabPane: [
       {
         icon: <Cog />,
-        title: 'Vision',
+        title: 'Our Vision',
       },
     ],
     tabContent: [
       {
         image: dashboard,
-        title: `Help NFT, DeFI and Metaverse communities`,
-        description: `Our vision is to creating a fair and transparent system to reimburse projects who were hacked by hackers.`,
+        title: `Support NFT, DeFi and Metaverse communities`,
+        description: `Our vision is to creating a fair and transparent system to support artists, developers and community members of the emerging NFT, DeFi and metaverse space.`,
         readMore: '#introduce-quality',
       },
     ],
@@ -86,14 +86,14 @@ const data = [
     tabPane: [
       {
         icon: <BarChart />,
-        title: 'DAO',
+        title: 'Signature DAO',
       },
     ],
     tabContent: [
       {
         image: dashboard,
-        title: `Fifth quality feature that boost your website rank & performance`,
-        description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
+        title: `Transparant, Open and Accountable goverenence`,
+        description: `The incredible One Million Signature DAO community will hold an NFT of one million pixels with 200,000+ signatures empowering them to support various communities in the Web3 world. 40 + 10 + 30 + 10 + 10`,
         readMore: '#introduce-quality',
       },
     ],
