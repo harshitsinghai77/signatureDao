@@ -35,10 +35,18 @@ const Support = () => {
   const refSignatureRef = useRef(null);
 
   const trimSignature = () => {
-    const trimmedSignature = refSignatureRef
+    if (!refSignatureRef.current) return;
+    console.log("Getting trimmed");
+    const trimmedSignature = refSignatureRef.current
       .getTrimmedCanvas()
       .toDataURL("image/png");
+
     console.log("trimmedSignature", trimmedSignature);
+  };
+
+  const clearSignature = () => {
+    if (!refSignatureRef.current) return;
+    refSignatureRef.current.clear();
   };
 
   return (
@@ -58,13 +66,19 @@ const Support = () => {
               </Box>
             </Flex>
           ))}
-          <Box sx={styles.signatureCanvas}>
+          <Box>
             <SignatureCanvas
-              ref={refSignatureRef}
+              ref={(ref) => {
+                refSignatureRef.current = ref;
+              }}
               penColor="black"
-              canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+              backgroundColor="#FFC059"
+              canvasProps={styles.canvasProps}
             />
-            <Button onClick={trimSignature}>Trim</Button>
+            <Box sx={styles.canvasButton}>
+              <Button onClick={trimSignature}>Trim</Button>
+              <Button onClick={clearSignature}>Clear</Button>
+            </Box>
           </Box>
         </Grid>
       </Container>
@@ -130,7 +144,12 @@ const styles = {
       mt: [3],
     },
   },
-  signatureCanvas: {
-    backgroundColor: "primary",
+  canvasButton: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  canvasProps: {
+    width: 500,
+    height: 300,
   },
 };

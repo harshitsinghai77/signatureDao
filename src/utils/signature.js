@@ -16,7 +16,7 @@ export const createSvgFromSignature = (signature) => {
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMinYMin meet"
       viewBox="0 0 350 350"
-      fill="white"
+      fill="#FFC059"
     >
       <rect width="100%" height="70%" fill="black" />
       <text
@@ -31,21 +31,12 @@ export const createSvgFromSignature = (signature) => {
       </text>
     </svg>
   );
-  // return imgSVG;
   return renderToStaticMarkup(imgSVG);
 };
 
-const convertToBufferSomething = async (svgElement) => {
-  //file is converted to a buffer for upload to IPFS
-  //set this buffer -using es6 syntax
-  const encodedStringImage = Buffer.from(svgElement);
-  return encodedStringImage;
-};
-
 export const convertToBuffer = async (svgElement) => {
-  const buffer = await convertToBufferSomething(svgElement);
-  // const finalImg = `data:image/svg+xml;base64,${buffer}`;
-  return buffer;
+  const svgBuffer = Buffer.from(svgElement);
+  return svgBuffer;
 };
 
 export const addDataToIPFS = async (metadata) => {

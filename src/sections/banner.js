@@ -39,7 +39,7 @@ const logos = [
 ];
 
 const Banner = () => {
-  const [signature, setSignature] = useState("harshit");
+  const [signature, setSignature] = useState("Your Signature");
 
   const onClaimNFT = async (e) => {
     e.preventDefault();
@@ -67,27 +67,6 @@ const Banner = () => {
               victory of the managements that supplies best design system
               guidelines ever.
             </Text>
-
-            <svg
-              id="mysvg"
-              xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="xMinYMin meet"
-              viewBox="0 0 350 350"
-              fill="#FFC059"
-            >
-              <rect width="100%" height="70%" fill="black" />
-              <text
-                x="50%"
-                y="25%"
-                textAnchor="middle"
-                style={{ fontFamily: "Gochi Hand, cursive", fontSize: "28px" }}
-              >
-                <tspan x="50%" dy="1.2em">
-                  {signature}
-                </tspan>
-              </text>
-            </svg>
-
             <Flex as="form" sx={(styles.form, styles.signatureForm)}>
               <Input
                 type="text"
@@ -110,11 +89,7 @@ const Banner = () => {
             </Flex>
           </Box>
           <Flex as="figure" sx={styles.bannerImage}>
-            {signature ? (
-              <h1 sx={styles.signatureText}>{signature}</h1>
-            ) : (
-              <Image src={illustration} alt="illustration" />
-            )}
+            <h1 sx={styles.signatureText}>{signature}</h1>
           </Flex>
         </Box>
       </Container>
@@ -211,6 +186,7 @@ const styles = {
   signatureText: {
     fontFamily: "Gochi Hand, cursive",
     fontSize: [38, null, null, null, 55],
+    color: "primary",
   },
   bannerImage: {
     alignItems: "center",
@@ -220,5 +196,8 @@ const styles = {
       maxWidth: [null, null, null, "80%", "100%"],
       m: [null, null, null, "0 auto", 0],
     },
+    backgroundColor: "black",
+    borderRadius: "1.25rem",
+    height: "400px",
   },
 };
