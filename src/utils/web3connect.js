@@ -1,21 +1,28 @@
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { Web3Provider } from "@ethersproject/providers";
+import Authereum from "authereum";
 
 const INFURA_ID = "6f006a0521514865af0036763e47b34e";
 
-const web3Modal = new Web3Modal({
-  network: "mainnet", // optional
-  cacheProvider: true, // optional
-  providerOptions: {
-    walletconnect: {
-      package: WalletConnectProvider, // required
-      options: {
-        // infuraId: "460f40a260564ac4a4f4b3fffb032dad",
+export const getWeb3Modal = () => {
+  const web3Modal = new Web3Modal({
+    network: "mainnet", // optional
+    cacheProvider: true, // optional
+    // disableInjectedProvider: true,
+    providerOptions: {
+      walletconnect: {
+        package: WalletConnectProvider, // required
+        options: {
+          infuraId: "460f40a260564ac4a4f4b3fffb032dad",
+        },
+      },
+      authereum: {
+        package: Authereum, // required
       },
     },
-  },
-});
+  });
+  return web3Modal;
+};
 
 export const LogoutWeb3Modal = async () => {
   await web3Modal.clearCachedProvider();

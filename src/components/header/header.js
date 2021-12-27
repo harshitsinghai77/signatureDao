@@ -1,27 +1,105 @@
 /** @jsx jsx */
-import { jsx, Box, Container, Flex, Button } from 'theme-ui';
-import Sticky from 'react-stickynode';
-import { useState } from 'react';
-import { DrawerProvider } from 'contexts/drawer/drawer-provider';
-import NavbarDrawer from './navbar-drawer';
-import Image from 'components/image';
-import Logo from 'components/logo';
-import { NavLink } from 'components/link';
+import { useState, useEffect, useContext } from "react";
+import { jsx, Box, Container, Flex, Button } from "theme-ui";
+import Sticky from "react-stickynode";
+import { Web3Provider } from "@ethersproject/providers";
 
-import menuItems from './header.data';
-import lock from 'assets/images/icons/lock.png';
+import { DrawerProvider } from "contexts/drawer/drawer-provider";
+import NavbarDrawer from "./navbar-drawer";
+import Logo from "components/logo";
+import { getWeb3Modal } from "utils/web3connect";
+import { Web3CreateContext } from "contexts/web3-context";
+import {
+  SET_WEB3_PROVIDER,
+  RESET_WEB3_PROVIDER,
+  SET_CHAIN_ID,
+} from "contexts/web3-constants";
+import { CURRENT_NETWORK } from "utils/constants";
 
 export default function Header() {
-  const [state, setState] = useState({
+  const { state, dispatch } = useContext(Web3CreateContext);
+  const { provider, address, chainId } = state;
+  const [web3Modal, setWeb3Modal] = useState();
+
+  const [stateMobile, setState] = useState({
     isMobileMenu: false,
     isSticky: false,
   });
   const handleCloseMenu = () => {
     setState({
-      ...state,
+      ...stateMobile,
       isMobileMenu: false,
     });
   };
+
+  const onWeb3Connect = async () => {
+    if (!web3Modal) return;
+    try {
+      const provider = await web3Modal.connect();
+      // We plug the initial `provider` into ethers.js and get back
+      // a Web3Provider. This will add on methods from ethers.js and
+      // event listeners such as `.on()` will be different.
+      const web3Provider = new Web3Provider(provider);
+
+      const signer = web3Provider.getSigner();
+      const address = await signer.getAddress();
+
+      const network = await web3Provider.getNetwork();
+      dispatch({
+        type: SET_WEB3_PROVIDER,
+        provider,
+        web3Provider,
+        address,
+        chainId: network.chainId,
+      });
+    } catch (e) {
+      console.log("Web3Error caught", e);
+    }
+  };
+
+  const onWeb3Disconnect = async () => {
+    await web3Modal.clearCachedProvider();
+    if (provider?.disconnect && typeof provider.disconnect === "function") {
+      await provider.disconnect();
+    }
+    dispatch({
+      type: RESET_WEB3_PROVIDER,
+    });
+  };
+
+  useEffect(() => {
+    if (provider) {
+      const handleChainChanged = (chainId) => {
+        chainId = parseInt(chainId, 16);
+        dispatch({
+          type: SET_CHAIN_ID,
+          chainId: chainId,
+        });
+      };
+
+      const handleDisconnect = (error) => {
+        // eslint-disable-next-line no-console
+        console.log("disconnect", error);
+        onWeb3Disconnect();
+      };
+
+      provider.on("chainChanged", handleChainChanged);
+      provider.on("disconnect", handleDisconnect);
+
+      // Subscription Cleanup
+      return () => {
+        if (provider.removeListener) {
+          provider.removeListener("chainChanged", handleChainChanged);
+          provider.removeListener("disconnect", handleDisconnect);
+        }
+      };
+    }
+  }, [provider]);
+
+  useEffect(() => {
+    const web3Modal = getWeb3Modal();
+    setWeb3Modal(web3Modal);
+  }, []);
 
   return (
     <DrawerProvider>
@@ -30,36 +108,57 @@ export default function Header() {
           <Box
             as="header"
             variant="layout.header"
-            className={state.isMobileMenu ? 'is-mobile-menu' : ''}
+            className={stateMobile.isMobileMenu ? "is-mobile-menu" : ""}
           >
             <Container>
               <Box sx={styles.headerInner}>
-                <Logo sx={styles.logo} isSticky={state.isSticky} />
+                <Logo sx={styles.logo} isSticky={stateMobile.isSticky} />
+
                 <Flex
                   as="nav"
                   sx={styles.navbar}
-                  className={state.isMobileMenu ? 'navbar active' : 'navbar'}
+                  className={
+                    stateMobile.isMobileMenu ? "navbar active" : "navbar"
+                  }
                 >
                   <Box
                     as="ul"
                     sx={styles.navList}
-                    className={state.isMobileMenu ? 'active' : ''}
-                  >
-                    {menuItems.map(({ path, label }, i) => (
-                      <li key={i}>
-                        <NavLink
-                          path={path}
-                          label={label}
-                          onClick={handleCloseMenu}
-                        />
-                      </li>
-                    ))}
-                  </Box>
+                    className={stateMobile.isMobileMenu ? "active" : ""}
+                  ></Box>
                 </Flex>
-                <Flex sx={styles.buttonGroup}>
-                  <Button variant="text" sx={styles.getStarted}>
-                    Connect
-                  </Button>
+
+                <Flex>
+                  {provider && !(chainId === CURRENT_NETWORK?.chainId) && (
+                    <Button variant="text" sx={styles.error}>
+                      Change to {CURRENT_NETWORK?.name}
+                    </Button>
+                  )}
+
+                  {address && (
+                    <Button variant="text" sx={styles.getStarted}>
+                      {address.substring(0, 4) +
+                        "..." +
+                        address.substring(address.length - 3, address.length)}
+                    </Button>
+                  )}
+                  {provider ? (
+                    <Button
+                      variant="text"
+                      sx={styles.getStarted}
+                      onClick={onWeb3Disconnect}
+                    >
+                      Disconnect
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="text"
+                      sx={styles.getStarted}
+                      onClick={onWeb3Connect}
+                    >
+                      Connect
+                    </Button>
+                  )}
                 </Flex>
                 <NavbarDrawer />
               </Box>
@@ -73,105 +172,78 @@ export default function Header() {
 
 const styles = {
   headerWrapper: {
-    backgroundColor: '#FFFCF7',
+    justifyContent: "space-between",
+    backgroundColor: "#FFFCF7",
     header: {
-      position: 'relative',
+      position: "relative",
       left: 0,
       right: 0,
       py: [4],
-      transition: 'all 0.3s ease-in-out 0s',
-      '&.is-mobile-menu': {
-        backgroundColor: 'white',
+      transition: "all 0.3s ease-in-out 0s",
+      "&.is-mobile-menu": {
+        backgroundColor: "white",
       },
     },
-    '.is-sticky': {
+    ".is-sticky": {
       header: {
-        backgroundColor: 'white',
-        py: ['13px'],
-        boxShadow: '0 6px 13px rgba(38,78,118,0.1)',
+        backgroundColor: "white",
+        py: ["13px"],
+        boxShadow: "0 6px 13px rgba(38,78,118,0.1)",
       },
     },
   },
   headerInner: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    // alignItems: "center",
+    justifyContent: "space-between",
     // position: ['relative', null, null, 'static'],
   },
   logo: {
     mr: [null, null, null, null, 30, 12],
   },
   navbar: {
-    display: ['none', null, null, null, 'flex'],
-    alignItems: 'center',
+    display: ["none", null, null, null, "flex"],
+    alignItems: "center",
     flexGrow: 1,
     // justifyContent: 'center',
     li: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       a: {
-        cursor: 'pointer',
-        transition: 'all 0.3s ease-in-out 0s',
+        cursor: "pointer",
+        transition: "all 0.3s ease-in-out 0s",
       },
     },
   },
   navList: {
-    display: ['flex'],
-    listStyle: 'none',
+    display: ["flex"],
+    listStyle: "none",
     flexGrow: 1,
     p: 0,
-    '.nav-item': {
-      cursor: 'pointer',
+    ".nav-item": {
+      cursor: "pointer",
       fontWeight: 400,
       padding: 0,
-      margin: [null, null, null, null, '0 15px'],
+      margin: [null, null, null, null, "0 15px"],
     },
-    '.active': {
-      color: 'primary',
+    ".active": {
+      color: "primary",
     },
   },
   getStarted: {
-    backgroundColor: '#FFF0D7',
-    color: '#E6A740',
-    p: ['0 16px'],
+    backgroundColor: "#FFF0D7",
+    color: "#E6A740",
+    p: ["0 16px"],
     minHeight: 45,
     ml: [6],
-    display: ['none', null, null, null, 'flex'],
+    display: ["none", null, null, null, "flex"],
   },
-  login: {
-    backgroundColor: 'transparent',
-    position: ['absolute', null, null, null, 'static'],
-    color: 'text',
-    fontSize: [2],
-    fontWeight: 500,
-    top: '50%',
-    p: 0,
-    transform: ['translateY(-50%)', null, null, null, 'none'],
-    right: 79,
-    border: 0,
-    fontFamily: 'body',
-    display: 'flex',
-    alignItems: 'center',
-    outline: 0,
-    img: {
-      maxWidth: 14,
-      mr: 2,
-    },
-  },
-  menuButton: {
-    position: 'relative',
-    right: '-6px',
-    p: 0,
-  },
-  closeButton: {
-    height: '32px',
-    padding: '0',
-    minHeight: 'auto',
-    width: '32px',
-    position: 'relative',
-    right: '-10px',
-    path: {
-      stroke: 'text',
-    },
+  error: {
+    backgroundColor: "#ffd7dd",
+    color: "#e64040",
+    p: ["0 16px"],
+    minHeight: 45,
+    ml: [6],
+    display: ["none", null, null, null, "flex"],
   },
 };

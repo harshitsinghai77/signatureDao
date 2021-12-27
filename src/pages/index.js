@@ -11,24 +11,27 @@ import Dashboard from "sections/dashboard";
 import Pricing from "sections/pricing";
 import Testimonials from "sections/testimonials";
 import Subscribe from "sections/subscribe";
+import { Web3ContextProvider } from "contexts/web3-context";
 
 export default function IndexPage() {
   return (
     <ThemeProvider theme={theme}>
-      <Layout>
-        <SEO
-          title="One Million Signature DAO"
-          description="Collection of free top of the line startup landing templates built using react/ next js. Free to download, simply edit and deploy! Updated weekly!"
-        />
-        <Banner />
-        <Support />
-        {/* <PremiumFeature /> */}
-        {/* <AppFeature /> */}
-        <Dashboard />
-        <Pricing />
-        <Testimonials />
-        <Subscribe />
-      </Layout>
+      <Web3ContextProvider>
+        <Layout>
+          <SEO
+            title="One Million Signature DAO"
+            description="Collection of free top of the line startup landing templates built using react/ next js. Free to download, simply edit and deploy! Updated weekly!"
+          />
+          <Banner />
+          <Support />
+          {/* <PremiumFeature /> */}
+          {/* <AppFeature /> */}
+          <Dashboard />
+          <Pricing />
+          <Testimonials />
+          <Subscribe />
+        </Layout>
+      </Web3ContextProvider>
     </ThemeProvider>
   );
 }

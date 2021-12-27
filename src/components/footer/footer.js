@@ -1,31 +1,10 @@
 /** @jsx jsx */
-import { jsx, Flex, Box, Text, Container } from 'theme-ui';
-import { rgba } from 'polished';
-import { Link } from 'components/link';
-import Logo from 'components/logo';
+import { jsx, Flex, Box, Text, Container } from "theme-ui";
+import { rgba } from "polished";
+import { Link } from "components/link";
+import Logo from "components/logo";
 
-const menuItems = [
-  {
-    path: '#home',
-    label: 'Home',
-  },
-  {
-    path: '#advertise',
-    label: 'Advertise',
-  },
-  {
-    path: '#supports',
-    label: 'Supports',
-  },
-  {
-    path: '#marketing',
-    label: 'Marketing',
-  },
-  {
-    path: '#faq',
-    label: 'FAQ',
-  },
-];
+const menuItems = [];
 
 export default function Footer() {
   return (
@@ -53,39 +32,39 @@ export default function Footer() {
 
 const styles = {
   footer: {
-    backgroundColor: '#2B293E',
+    backgroundColor: "#2B293E",
     pt: [6],
     pb: [6],
   },
   footerInner: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: ['column', null, null, null, 'row'],
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: ["column", null, null, null, "row"],
   },
   copyright: {
-    alignItems: 'center',
-    flexDirection: ['column', null, null, null, 'row'],
+    alignItems: "center",
+    flexDirection: ["column", null, null, null, "row"],
     span: {
-      color: rgba('white', 0.7),
+      color: rgba("white", 0.7),
       fontSize: 1,
-      lineHeight: '18px',
+      lineHeight: "18px",
       ml: [null, null, null, null, 3],
       mt: [3, null, null, null, 0],
     },
   },
   footerNav: {
-    listStyle: 'none',
+    listStyle: "none",
     // flexDirection: ['column', null, null, null, 'row'],
-    m: ['25px 0 0', null, null, null, 0],
+    m: ["25px 0 0", null, null, null, 0],
     p: 0,
     li: {
-      '+ li': {
+      "+ li": {
         ml: [3, null, null, null, 4],
       },
       a: {
-        color: 'white',
-        cursor: 'pointer',
-        textDecoration: 'none',
+        color: "white",
+        cursor: "pointer",
+        textDecoration: "none",
         fontSize: [1, null, null, 2],
       },
     },

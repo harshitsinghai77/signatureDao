@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   jsx,
   Box,
@@ -10,18 +10,23 @@ import {
   Input,
   Button,
 } from "theme-ui";
+import { ethers } from "ethers";
 import { rgba } from "polished";
-import Image from "components/image";
-import illustration from "assets/images/banner.png";
-import paypal from "assets/images/paypal.png";
-import google from "assets/images/google.png";
-import dropbox from "assets/images/dropbox.png";
+
+import { getContract } from "utils/getContact";
 import {
   createSvgFromSignature,
   convertToBuffer,
   addDataToIPFS,
   createNFTMeta,
 } from "utils/signature";
+import { Web3CreateContext } from "contexts/web3-context";
+import { INFURA_ID, CURRENT_NETWORK } from "utils/constants";
+
+import Image from "components/image";
+import paypal from "assets/images/paypal.png";
+import google from "assets/images/google.png";
+import dropbox from "assets/images/dropbox.png";
 
 const logos = [
   {
@@ -38,26 +43,32 @@ const logos = [
   },
 ];
 
-const Banner = () => {
+const defaulProvider = ethers.getDefaultProvider(
+  CURRENT_NETWORK.name,
+  INFURA_ID
+);
+
+const HomePage = () => {
+  const { state } = useContext(Web3CreateContext);
+  const { address, web3Provider } = state;
+
   const [signature, setSignature] = useState("");
   const [randomName, setRandomName] = useState("");
-  const [elegible, setElegible] = useState(true);
+  const [isEligibleToMint, setIsEligibleToMint] = useState(false);
+  const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
 
-
-  function changedValue(value) {
-    setSignature(value);
-    if (elegible) {
-      setTotalPrice(value.length * 1);
+  const onChangeSignature = (event) => {
+    const signature = event.target.value;
+    setSignature(signature);
+    if (isEligibleToDiscount) {
+      setTotalPrice(signature.length * 0.01);
     } else {
-      setTotalPrice(value.length * 5);
+      setTotalPrice(signature.length * 0.02);
     }
-  }
+  };
 
-  const onClaimNFT = async (e) => {
-    e.preventDefault();
-    if (!signature) return;
-
+  const uploadSignatureToIpfs = async (signature) => {
     // // Create SVG image and add it to IPFS
     const imgSVG = createSvgFromSignature(signature);
     const svgImg = await convertToBuffer(imgSVG);
@@ -66,21 +77,57 @@ const Banner = () => {
     // // Create NFT metadata and add it to IPFS
     const nftMetadata = createNFTMeta(imghash, signature);
     const ipfsNFTMetaData = await addDataToIPFS(nftMetadata);
-    console.log("ipfsNFTMetaData: ", ipfsNFTMetaData);
+    return ipfsNFTMetaData;
+  };
+
+  const onClaimNFT = async (e) => {
+    e.preventDefault();
+    if (!signature || !web3Provider) return;
+    const ipfsSignatureHash = await uploadSignatureToIpfs(signature);
+    const signer = web3Provider.getSigner();
+    const contract = getContract(signer);
+    const value = totalPrice * 10 ** 18;
+    const tx = await contract._mint(
+      signature.length,
+      signature,
+      `ipfs://${ipfsSignatureHash}`,
+      {
+        value: ethers.BigNumber.from(value.toString()),
+        gasLimit: 6000000,
+      }
+    );
+    await tx.wait();
+    console.log(tx.hash);
   };
 
   // Create a function to get random names using API call
   const getRandomName = async () => {
-    const response = await fetch(
-      "https://randomuser.me/api/"
-    );
+    const response = await fetch("https://randomuser.me/api/");
     const data = await response.json();
-    console.log("data: ", data.results[0].name.first + " " + data.results[0].name.last);
-    
     setRandomName(data.results[0].name.first + " " + data.results[0].name.last);
   };
 
-  // create useEffect and call getRandomName function
+  const checkIfEligible = async () => {
+    const contract = getContract(defaulProvider);
+    const isEligibleToMint = await contract.addressToSignature(address);
+    const isEligibleToDiscount = await contract.checkElegibleMember(address);
+    console.log("isEligibleToMint", isEligibleToMint.toString());
+    if (isEligibleToMint.toString() != "0") {
+      setIsEligibleToMint(true);
+    }
+    console.log(
+      "isEligibleToDiscount",
+      isEligibleToDiscount,
+      typeof isEligibleToDiscount
+    );
+    setIsEligibleToDiscount(isEligibleToDiscount);
+  };
+
+  useEffect(() => {
+    if (!address) return;
+    checkIfEligible();
+  }, [address]);
+
   useEffect(() => {
     getRandomName();
   }, []);
@@ -101,35 +148,26 @@ const Banner = () => {
                 type="text"
                 placeholder="Enter Your Signature"
                 value={signature || ""}
-                onChange={(event) => changedValue(event.target.value)}
+                onChange={onChangeSignature}
               />
               <Button onClick={onClaimNFT}>Claim NFT</Button>
             </Flex>
 
             <Flex sx={styles.sponsoredBy}>
-              {/* condition based on elegible */}
-              { elegible ? (
-                  <Text as="p">
-                    <strong>
-                      You are elegible for a discount on your NFT signature.
-                    </strong>
-                  </Text>
-                  )
-                  :
-                  <Text as="p">
-                    <strong>
-                      You are not elegible for a discounted signature.
-                    </strong>
-                  </Text>
-              }
-
+              <Text as="p">
+                <strong>
+                  {isEligibleToDiscount
+                    ? "You are elegible for a discount on your NFT signature."
+                    : "You are not elegible for a discounted signature."}
+                </strong>
+              </Text>
               <Text as="span">MATIC to pay : {totalPrice}</Text>
-
             </Flex>
           </Box>
           <Flex as="figure" sx={styles.bannerImage}>
-            {/* Get a random name for signature using an api call */}
-            <h1 sx={styles.signatureText}>{signature ? signature: randomName}</h1>
+            <h1 sx={styles.signatureText}>
+              {signature ? signature : randomName}
+            </h1>
           </Flex>
         </Box>
       </Container>
@@ -137,7 +175,7 @@ const Banner = () => {
   );
 };
 
-export default Banner;
+export default HomePage;
 
 const styles = {
   section: {

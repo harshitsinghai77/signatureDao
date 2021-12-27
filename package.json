@@ -10,6 +10,11 @@
     "postbuild": "next-sitemap"
   },
   "dependencies": {
+    "@ethersproject/providers": "^5.5.1",
+    "@toruslabs/torus-embed": "^1.18.7",
+    "@walletconnect/web3-provider": "^1.6.6",
+    "authereum": "^0.1.14",
+    "ethers": "^5.5.2",
     "framer-motion": "^2.9.5",
     "ipfs-http-client": "^55.0.0",
     "next": "^10.0.3",
@@ -27,7 +32,8 @@
     "react-signature-canvas": "^1.0.3",
     "react-stickynode": "^3.0.4",
     "swiper": "^6.3.5",
-    "theme-ui": "^0.3.4"
+    "theme-ui": "^0.3.4",
+    "web3modal": "^1.9.4"
   },
   "devDependencies": {
     "imagemin-mozjpeg": "^9.0.0",
