@@ -185,7 +185,7 @@ const styles = {
   },
   signatureText: {
     fontFamily: "Gochi Hand, cursive",
-    fontSize: [38, null, null, null, 55],
+    fontSize: [38, null, null, null, 38],
     color: "primary",
   },
   bannerImage: {

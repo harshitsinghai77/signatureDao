@@ -2,10 +2,10 @@ import React from "react";
 import Head from "next/head";
 
 export default function SEO({
-  description = "startup landing descriptions",
+  description = "Get Your Own Personalized NFT Signature",
   author = "RedQ, Inc",
   meta,
-  title = "startup landing title",
+  title = "One Million Signature DAO",
 }) {
   const metaData = [
     {
