@@ -25,7 +25,7 @@ const data = [
       {
         image: dashboard,
         title: `Personalized, one and only signature NFT`,
-        description: `Grab your spot on The Million Signature DAO Mega-NFT. Discounts for popular NFT owners, including CryptoPunks, CryptoKitties, Bored Ape Yacht Club, Adidas Originals, PUNKS Comic, Loot, and many more!`,
+        description: `Grab your spot on The Million Signature DAO Mega-NFT. Discounts for popular NFT holders, including CryptoPunks, CryptoKitties, Bored Ape Yacht Club, Adidas Originals, PUNKS Comic, Loot, and many more!`,
         readMore: '#introduce-quality',
       },
     ],
@@ -41,8 +41,8 @@ const data = [
     tabContent: [
       {
         image: dashboard,
-        title: `Second quality feature that boost your website rank & performance`,
-        description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
+        title: `Help NFT, DeFI and Metaverse communities`,
+        description: `Our vision is to creating a fair and transparent system to reimburse projects who were hacked by hackers.`,
         readMore: '#introduce-quality',
       },
     ],
