@@ -71,8 +71,9 @@ const Support = () => {
               ref={(ref) => {
                 refSignatureRef.current = ref;
               }}
-              penColor="black"
-              backgroundColor="#FFC059"
+              // dotSize={1810}
+              penColor="#FFC059"
+              backgroundColor="black"
               canvasProps={styles.canvasProps}
             />
             <Box sx={styles.canvasButton}>

@@ -9,7 +9,7 @@ const ifpsConfig = {
 
 const ipfs = create(ifpsConfig);
 
-export const createSvgFromSignature = (signature) => {
+export const exportSignatureAsSVG = (signature) => {
   const imgSVG = (
     <svg
       id="mysvg"
@@ -32,6 +32,13 @@ export const createSvgFromSignature = (signature) => {
     </svg>
   );
   return renderToStaticMarkup(imgSVG);
+};
+
+export const exportSignatureAsPNG = async (base64EncodedImage) => {
+  const fetchSignature = await fetch(base64EncodedImage);
+  const blob = await fetchSignature.blob();
+  const file = new File([blob], "something.png", { type: "image/png" });
+  return file;
 };
 
 export const convertToBuffer = async (svgElement) => {

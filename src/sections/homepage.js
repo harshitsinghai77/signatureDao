@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import {
   jsx,
   Box,
@@ -15,15 +15,18 @@ import { rgba } from "polished";
 
 import { getContract } from "utils/getContact";
 import {
-  createSvgFromSignature,
+  exportSignatureAsSVG,
+  exportSignatureAsPNG,
   convertToBuffer,
   addDataToIPFS,
   createNFTMeta,
 } from "utils/signature";
 import { Web3CreateContext } from "contexts/web3-context";
 import { INFURA_ID, CURRENT_NETWORK } from "utils/constants";
+import CanvasText from "components/canvasText/CanvasText";
+import CanvasSignature from "components/canvasText/canvasSignature";
+import ConfettiComponent from "components/confetti/";
 
-import Image from "components/image";
 import paypal from "assets/images/paypal.png";
 import google from "assets/images/google.png";
 import dropbox from "assets/images/dropbox.png";
@@ -48,49 +51,64 @@ const defaulProvider = ethers.getDefaultProvider(
   INFURA_ID
 );
 
+// if true then use canvas to create singature else create and use SVG as an NFT
+const enableCanvasSignature = false;
+
 const HomePage = () => {
   const { state } = useContext(Web3CreateContext);
   const { address, web3Provider } = state;
 
+  const canvasRef = useRef();
+  const canvasSignature = useRef();
+
   const [signature, setSignature] = useState("");
   const [randomName, setRandomName] = useState("");
   const [isEligibleToMint, setIsEligibleToMint] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const onChangeSignature = (event) => {
     const signature = event.target.value;
-    setSignature(signature);
+    let price;
     if (isEligibleToDiscount) {
-      setTotalPrice(signature.length * 0.01);
+      price = signature.length * 0.01;
     } else {
-      setTotalPrice(signature.length * 0.02);
+      price = signature.length * 0.02;
     }
-  };
 
-  const uploadSignatureToIpfs = async (signature) => {
-    // // Create SVG image and add it to IPFS
-    const imgSVG = createSvgFromSignature(signature);
-    const svgImg = await convertToBuffer(imgSVG);
-    const imghash = await addDataToIPFS(svgImg);
-
-    // // Create NFT metadata and add it to IPFS
-    const nftMetadata = createNFTMeta(imghash, signature);
-    const ipfsNFTMetaData = await addDataToIPFS(nftMetadata);
-    return ipfsNFTMetaData;
+    setSignature(signature);
+    setTotalPrice(price.toFixed(3));
   };
 
   const onClaimNFT = async (e) => {
     e.preventDefault();
     if (!signature || !web3Provider) return;
-    const ipfsSignatureHash = await uploadSignatureToIpfs(signature);
+
+    let signatureNFT;
+    if (enableCanvasSignature) {
+      // Export signature from canvas as png
+      const base64EncodedImage = canvasRef.current.getImg();
+      signatureNFT = exportSignatureAsPNG(base64EncodedImage);
+    } else {
+      // Export signature as SVG
+      const signatureSVG = exportSignatureAsSVG(signature);
+      signatureNFT = await convertToBuffer(signatureSVG);
+    }
+
+    const imghash = await addDataToIPFS(signatureNFT);
+
+    // // Create NFT metadata and add it to IPFS
+    const nftMetadata = createNFTMeta(imghash, signature);
+    const ipfsNFTMetadata = await addDataToIPFS(nftMetadata);
+
     const signer = web3Provider.getSigner();
     const contract = getContract(signer);
     const value = totalPrice * 10 ** 18;
     const tx = await contract._mint(
       signature.length,
       signature,
-      `ipfs://${ipfsSignatureHash}`,
+      `ipfs://${ipfsNFTMetadata}`,
       {
         value: ethers.BigNumber.from(value.toString()),
         gasLimit: 6000000,
@@ -98,6 +116,7 @@ const HomePage = () => {
     );
     await tx.wait();
     console.log(tx.hash);
+    setShowConfetti(true);
   };
 
   // Create a function to get random names using API call
@@ -111,9 +130,17 @@ const HomePage = () => {
     const contract = getContract(defaulProvider);
     const isEligibleToMint = await contract.addressToSignature(address);
     const isEligibleToDiscount = await contract.checkElegibleMember(address);
-    console.log("isEligibleToMint", isEligibleToMint.toString());
-    if (isEligibleToMint.toString() != "0") {
+    console.log(
+      "isEligibleToMint",
+      isEligibleToMint.toString(),
+      typeof isEligibleToMint
+    );
+    if (isEligibleToMint.toString() === "0") {
       setIsEligibleToMint(true);
+    } else {
+      // User has already minted the token
+      console.log("User has already minted the token");
+      setShowConfetti(true);
     }
     console.log(
       "isEligibleToDiscount",
@@ -122,6 +149,8 @@ const HomePage = () => {
     );
     setIsEligibleToDiscount(isEligibleToDiscount);
   };
+
+  const canvasCustomSignature = () => {};
 
   useEffect(() => {
     if (!address) return;
@@ -135,6 +164,7 @@ const HomePage = () => {
   return (
     <Box as="section" id="home" sx={styles.section}>
       <Container>
+        {/* {showConfetti && <ConfettiComponent />} */}
         <Box sx={styles.contentWrapper}>
           <Box sx={styles.bannerContent}>
             <Heading as="h1">Get Your Own Personalized NFT Signature</Heading>
@@ -153,22 +183,30 @@ const HomePage = () => {
               <Button onClick={onClaimNFT}>Claim NFT</Button>
             </Flex>
 
-            <Flex sx={styles.sponsoredBy}>
+            <Flex as="form" sx={(styles.form, styles.signatureForm)}>
               <Text as="p">
                 <strong>
                   {isEligibleToDiscount
-                    ? "You are elegible for a discount on your NFT signature."
-                    : "You are not elegible for a discounted signature."}
+                    ? "Elegible for a discount"
+                    : "Not elegible for a discount "}
                 </strong>
+                &nbsp;
               </Text>
-              <Text as="span">MATIC to pay : {totalPrice}</Text>
+              <Text as="p">MATIC to pay : {totalPrice}</Text>
             </Flex>
           </Box>
+
           <Flex as="figure" sx={styles.bannerImage}>
-            <h1 sx={styles.signatureText}>
-              {signature ? signature : randomName}
-            </h1>
+            {enableCanvasSignature ? (
+              <CanvasText
+                changeText={signature || randomName}
+                ref={canvasRef}
+              />
+            ) : (
+              <h1 sx={styles.signatureText}>{signature || randomName}</h1>
+            )}
           </Flex>
+          <CanvasSignature ref={canvasRef} />
         </Box>
       </Container>
     </Box>
@@ -272,7 +310,7 @@ const styles = {
     mt: [0, null, null, null, 0],
     img: {
       maxWidth: [null, null, null, "80%", "100%"],
-      m: [null, null, null, "0 auto", 0],
+      m: [0, null, null, "0 auto", 0],
     },
     backgroundColor: "black",
     borderRadius: "1.25rem",

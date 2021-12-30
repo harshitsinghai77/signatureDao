@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.5.1",
-    "@toruslabs/torus-embed": "^1.18.7",
     "@walletconnect/web3-provider": "^1.6.6",
     "authereum": "^0.1.14",
+    "canvas-txt": "^3.0.0",
     "ethers": "^5.5.2",
     "framer-motion": "^2.9.5",
     "ipfs-http-client": "^55.0.0",
@@ -24,6 +24,7 @@
     "rc-drawer": "^4.1.0",
     "rc-tabs": "^11.7.2",
     "react": "^16.13.1",
+    "react-confetti": "^6.0.1",
     "react-dom": "^16.13.1",
     "react-ga": "^3.3.0",
     "react-icons": "^4.1.0",
@@ -31,6 +32,7 @@
     "react-scroll": "^1.8.1",
     "react-signature-canvas": "^1.0.3",
     "react-stickynode": "^3.0.4",
+    "react-use": "^17.3.1",
     "swiper": "^6.3.5",
     "theme-ui": "^0.3.4",
     "web3modal": "^1.9.4"
