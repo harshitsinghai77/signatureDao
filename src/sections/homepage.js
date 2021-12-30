@@ -25,6 +25,7 @@ import { defaultProvider } from "utils/web3connect";
 
 import CanvasText from "components/canvasText/CanvasText";
 import CanvasSignature from "components/canvasText/canvasSignature";
+import Modal from "components/modal/";
 import ConfettiComponent from "components/confetti/";
 
 import paypal from "assets/images/paypal.png";
@@ -182,65 +183,71 @@ const HomePage = () => {
   }, []);
 
   return (
-    <Box as="section" id="home" sx={styles.section}>
-      <Container>
-        {/* {showConfetti && <ConfettiComponent />} */}
-        <Box sx={styles.contentWrapper}>
-          <Box sx={styles.bannerContent}>
-            <Heading as="h1">Get Your Own Personalized NFT Signature</Heading>
-            <Text as="p">
-              Get your tests delivered at let home collect sample from the
-              victory of the managements that supplies best design system
-              guidelines ever.
-            </Text>
-            <Flex as="form" sx={(styles.form, styles.signatureForm)}>
-              <Input
-                type="text"
-                placeholder="Enter Your Signature"
-                value={signature || ""}
-                onChange={onChangeSignature}
-              />
-              <Button onClick={onClaimNFT}>Claim NFT</Button>
-            </Flex>
-
-            <Button
-              onClick={() => setToggleHandSignature((prevState) => !prevState)}
-              variant="secondary"
-            >
-              {toggleHandSignature
-                ? "Type your signature "
-                : "Get your own custom handwritten signature"}
-            </Button>
-
-            <Flex as="form" sx={(styles.form, styles.signatureForm)}>
+    <>
+      <Box as="section" id="home" sx={styles.section}>
+        <Container>
+          <Modal open={true} />
+          {/* {showConfetti && <ConfettiComponent />} */}
+          <Box sx={styles.contentWrapper}>
+            <Box sx={styles.bannerContent}>
+              <Heading as="h1">Get Your Own Personalized NFT Signature</Heading>
               <Text as="p">
-                <strong>
-                  {isEligibleToDiscount
-                    ? "Elegible for a discount"
-                    : "Not elegible for a discount "}
-                </strong>
-                &nbsp;
+                Get your tests delivered at let home collect sample from the
+                victory of the managements that supplies best design system
+                guidelines ever.
               </Text>
-              <Text as="p">MATIC to pay : {totalPrice}</Text>
+              <Flex as="form" sx={styles.signatureForm}>
+                <Input
+                  type="text"
+                  placeholder="Enter Your Signature"
+                  value={signature || ""}
+                  onChange={onChangeSignature}
+                />
+                <Button onClick={onClaimNFT}>Claim NFT</Button>
+              </Flex>
+
+              <Button
+                onClick={() =>
+                  setToggleHandSignature((prevState) => !prevState)
+                }
+                variant="secondary"
+              >
+                {toggleHandSignature
+                  ? "Type your signature "
+                  : "Get your own custom handwritten signature"}
+              </Button>
+
+              <Flex as="form" sx={(styles.form, styles.signatureForm)}>
+                <Text as="p">
+                  <strong>
+                    {isEligibleToDiscount
+                      ? "Elegible for a discount"
+                      : "Not elegible for a discount "}
+                  </strong>
+                  &nbsp;
+                </Text>
+                <Text as="p">MATIC to pay : {totalPrice}</Text>
+              </Flex>
+            </Box>
+            <Flex as="figure" sx={styles.bannerImage}>
+              {toggleHandSignature ? (
+                <CanvasSignature ref={handwrittenCanvasRef} />
+              ) : (
+                renderTextSignature()
+              )}
             </Flex>
+            {/* <Button onClick={handwrittenCanvasSignature}>Trim</Button> */}
+            <Button onClick={clearHandwrittenCanvasSignature}>Clear</Button>
           </Box>
-          <Flex as="figure" sx={styles.bannerImage}>
-            {toggleHandSignature ? (
-              <CanvasSignature ref={handwrittenCanvasRef} />
-            ) : (
-              renderTextSignature()
-            )}
-          </Flex>
-          {/* <Button onClick={handwrittenCanvasSignature}>Trim</Button> */}
-          <Button onClick={clearHandwrittenCanvasSignature}>Clear</Button>
-        </Box>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </>
   );
 };
 
 export default HomePage;
 
+// boxShadow: "inset 0px 0px 0 2000px rgba(0,0,0,0.5)",
 const styles = {
   section: {
     backgroundColor: "#FFFCF7",

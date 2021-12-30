@@ -27,8 +27,8 @@ export default function IndexPage() {
           {/* <PremiumFeature /> */}
           {/* <AppFeature /> */}
           <Dashboard />
-          <Pricing />
-          <Testimonials />
+          {/* <Pricing /> */}
+          {/* <Testimonials /> */}
           <Subscribe />
         </Layout>
       </Web3ContextProvider>
