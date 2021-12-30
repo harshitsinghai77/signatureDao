@@ -66,7 +66,7 @@ const Support = () => {
               </Box>
             </Flex>
           ))}
-          <Box>
+          {/* <Box>
             <SignatureCanvas
               ref={(ref) => {
                 refSignatureRef.current = ref;
@@ -80,7 +80,7 @@ const Support = () => {
               <Button onClick={trimSignature}>Trim</Button>
               <Button onClick={clearSignature}>Clear</Button>
             </Box>
-          </Box>
+          </Box> */}
         </Grid>
       </Container>
     </Box>

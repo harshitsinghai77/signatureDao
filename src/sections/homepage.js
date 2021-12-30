@@ -10,7 +10,6 @@ import {
   Input,
   Button,
 } from "theme-ui";
-import { ethers } from "ethers";
 import { rgba } from "polished";
 
 import { getContract } from "utils/getContact";
@@ -22,7 +21,8 @@ import {
   createNFTMeta,
 } from "utils/signature";
 import { Web3CreateContext } from "contexts/web3-context";
-import { INFURA_ID, CURRENT_NETWORK } from "utils/constants";
+import { defaultProvider } from "utils/web3connect";
+
 import CanvasText from "components/canvasText/CanvasText";
 import CanvasSignature from "components/canvasText/canvasSignature";
 import ConfettiComponent from "components/confetti/";
@@ -46,20 +46,15 @@ const logos = [
   },
 ];
 
-const defaulProvider = ethers.getDefaultProvider(
-  CURRENT_NETWORK.name,
-  INFURA_ID
-);
-
 // if true then use canvas to create singature else create and use SVG as an NFT
-const enableCanvasSignature = false;
+const enableCanvasSignature = true;
 
 const HomePage = () => {
   const { state } = useContext(Web3CreateContext);
   const { address, web3Provider } = state;
 
-  const canvasRef = useRef();
-  const canvasSignature = useRef();
+  const textCanvasRef = useRef();
+  const handwrittenCanvasRef = useRef();
 
   const [signature, setSignature] = useState("");
   const [randomName, setRandomName] = useState("");
@@ -67,6 +62,7 @@ const HomePage = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [toggleHandSignature, setToggleHandSignature] = useState(false);
 
   const onChangeSignature = (event) => {
     const signature = event.target.value;
@@ -88,13 +84,17 @@ const HomePage = () => {
     let signatureNFT;
     if (enableCanvasSignature) {
       // Export signature from canvas as png
-      const base64EncodedImage = canvasRef.current.getImg();
-      signatureNFT = exportSignatureAsPNG(base64EncodedImage);
+      const base64EncodedImage = textCanvasRef.current.getImg();
+      signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
     } else {
       // Export signature as SVG
       const signatureSVG = exportSignatureAsSVG(signature);
       signatureNFT = await convertToBuffer(signatureSVG);
     }
+
+    // if handwritten
+    // const base64EncodedImage = getHandwrittenCanvasSignature()
+    // signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
 
     const imghash = await addDataToIPFS(signatureNFT);
 
@@ -126,8 +126,8 @@ const HomePage = () => {
     setRandomName(data.results[0].name.first + " " + data.results[0].name.last);
   };
 
-  const checkIfEligible = async () => {
-    const contract = getContract(defaulProvider);
+  const getUserInformation = async () => {
+    const contract = getContract(defaultProvider);
     const isEligibleToMint = await contract.addressToSignature(address);
     const isEligibleToDiscount = await contract.checkElegibleMember(address);
     console.log(
@@ -150,11 +150,31 @@ const HomePage = () => {
     setIsEligibleToDiscount(isEligibleToDiscount);
   };
 
-  const canvasCustomSignature = () => {};
+  const renderTextSignature = () => {
+    if (enableCanvasSignature) {
+      return (
+        <CanvasText changeText={signature || randomName} ref={textCanvasRef} />
+      );
+    }
+    return <h1 sx={styles.signatureText}>{signature || randomName}</h1>;
+  };
+
+  const getHandwrittenCanvasSignature = () => {
+    if (!handwrittenCanvasRef.current) return;
+    const handwrittenSignature =
+      handwrittenCanvasRef.current.toDataURL("image/png");
+    return handwrittenSignature;
+  };
+
+  const clearHandwrittenCanvasSignature = () => {
+    console.log("handwrittenCanvasRef", handwrittenCanvasRef);
+    if (!handwrittenCanvasRef.current) return;
+    handwrittenCanvasRef.current.clear();
+  };
 
   useEffect(() => {
     if (!address) return;
-    checkIfEligible();
+    getUserInformation();
   }, [address]);
 
   useEffect(() => {
@@ -183,6 +203,15 @@ const HomePage = () => {
               <Button onClick={onClaimNFT}>Claim NFT</Button>
             </Flex>
 
+            <Button
+              onClick={() => setToggleHandSignature((prevState) => !prevState)}
+              variant="secondary"
+            >
+              {toggleHandSignature
+                ? "Type your signature "
+                : "Get your own custom handwritten signature"}
+            </Button>
+
             <Flex as="form" sx={(styles.form, styles.signatureForm)}>
               <Text as="p">
                 <strong>
@@ -195,18 +224,15 @@ const HomePage = () => {
               <Text as="p">MATIC to pay : {totalPrice}</Text>
             </Flex>
           </Box>
-
           <Flex as="figure" sx={styles.bannerImage}>
-            {enableCanvasSignature ? (
-              <CanvasText
-                changeText={signature || randomName}
-                ref={canvasRef}
-              />
+            {toggleHandSignature ? (
+              <CanvasSignature ref={handwrittenCanvasRef} />
             ) : (
-              <h1 sx={styles.signatureText}>{signature || randomName}</h1>
+              renderTextSignature()
             )}
           </Flex>
-          <CanvasSignature ref={canvasRef} />
+          {/* <Button onClick={handwrittenCanvasSignature}>Trim</Button> */}
+          <Button onClick={clearHandwrittenCanvasSignature}>Clear</Button>
         </Box>
       </Container>
     </Box>

@@ -16,7 +16,7 @@ const CanvasText = forwardRef(({ changeText }, ref) => {
     canvasTxt.font = "Gochi Hand, cursive";
     canvasTxt.fontWeight = "bold";
 
-    canvasTxt.drawText(ctx, changeText, 40, 40, 400, 300);
+    canvasTxt.drawText(ctx, changeText, 20, 40, 400, 300);
   }, [changeText]);
 
   useImperativeHandle(ref, () => ({

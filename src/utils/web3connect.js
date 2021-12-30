@@ -1,8 +1,10 @@
 import Web3Modal from "web3modal";
+import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Authereum from "authereum";
+import { INFURA_ID, CURRENT_NETWORK } from "utils/constants";
 
-const INFURA_ID = "6f006a0521514865af0036763e47b34e";
+// const INFURA_ID = "6f006a0521514865af0036763e47b34e";
 
 export const getWeb3Modal = () => {
   const web3Modal = new Web3Modal({
@@ -13,7 +15,7 @@ export const getWeb3Modal = () => {
       walletconnect: {
         package: WalletConnectProvider, // required
         options: {
-          infuraId: "460f40a260564ac4a4f4b3fffb032dad",
+          infuraId: INFURA_ID,
         },
       },
       authereum: {
@@ -36,3 +38,8 @@ export const GetWalletProvider = async () => {
   const provider = new Web3Provider(web3Modalprovider);
   return provider;
 };
+
+export const defaultProvider = ethers.getDefaultProvider(
+  CURRENT_NETWORK.name,
+  INFURA_ID
+);
