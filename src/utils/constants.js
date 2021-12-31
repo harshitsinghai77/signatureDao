@@ -72,11 +72,14 @@ export const NETWORKS = {
   },
 };
 
-export const NETWORK = (chainId) => {
+export const getNetwork = (chainId) => {
   const chainIdStr = parseInt(chainId);
-  const myNetwork = Object.keys(NETWORKS).filter(
+  const filtereNetwork = Object.keys(NETWORKS).filter(
     (el) => NETWORKS[el].chainId === chainIdStr
   );
-  return NETWORKS[myNetwork[0]];
+  return NETWORKS[filtereNetwork[0]];
 };
-export const CURRENT_NETWORK = NETWORK(process.env.NEXT_PUBLIC_CHAIN_ID);
+
+export const CURRENT_NETWORK = getNetwork(process.env.NEXT_PUBLIC_CHAIN_ID);
+
+export const TRANSACTION_LINK = "https://rinkeby.etherscan.io/tx/";

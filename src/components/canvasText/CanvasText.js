@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useRef, useEffect, forwardRef } from "react";
 import canvasTxt from "canvas-txt";
 
 const CanvasText = forwardRef(({ changeText }, ref) => {
@@ -18,13 +18,6 @@ const CanvasText = forwardRef(({ changeText }, ref) => {
 
     canvasTxt.drawText(ctx, changeText, 20, 40, 400, 300);
   }, [changeText]);
-
-  useImperativeHandle(ref, () => ({
-    getImg() {
-      const signatureImg = canvasRef.current.toDataURL("image/png");
-      return signatureImg;
-    },
-  }));
 
   return <canvas ref={canvasRef} width="500" height="400" />;
 });

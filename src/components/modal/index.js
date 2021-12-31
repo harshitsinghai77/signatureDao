@@ -1,43 +1,43 @@
 /** @jsx jsx */
 import { Modal, ModalContent, ModalFooter } from "@mattjennings/react-modal";
 import { jsx, Text, Button, Box, Grid } from "theme-ui";
+import Loader from "react-loader-spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faTimes } from "@fortawesome/free-solid-svg-icons";
-import Loader from "react-loader-spinner";
 
-const MyModal = (props) => {
+const MyModal = ({ open, txn, onClose }) => {
+  const { mintedOn, txnStatus, txnValue, txnLink, gasUsed } = txn;
   return (
-    <Modal {...props} sx={styles.outlined}>
-      {({ onClose }) => (
-        <Box sx={styles.section}>
-          <FontAwesomeIcon
-            color="#353448"
-            icon={faTimes}
-            sx={styles.closeButton}
-            onClick={onClose}
-            size="lg"
-          />
-          <FontAwesomeIcon
-            color="#353448"
-            icon={faPaperPlane}
-            sx={styles.transactionIcon}
-            size="3x"
-          />
-          <h2 sx={styles.title}>Transaction Submitted</h2>
+    <Modal open={open} sx={styles.outlined}>
+      <Box sx={styles.section}>
+        <FontAwesomeIcon
+          color="#353448"
+          icon={faTimes}
+          sx={styles.closeButton}
+          onClick={onClose}
+          size="lg"
+        />
+        <FontAwesomeIcon
+          color="#353448"
+          icon={faPaperPlane}
+          sx={styles.transactionIcon}
+          size="3x"
+        />
+        <h2 sx={styles.title}>Transaction Submitted</h2>
 
-          <ModalContent>
-            {/*  */}
-            <Text sx={styles.subtitle}>
-              NFT is being crafted by Oompa-Loompas and will be ready any moment
-              now.
-            </Text>
-            <Grid gap={2} columns={[2, null, 2]} sx={styles.infoGrid}>
-              <Box sx={styles.gridLeft}>Minted on</Box>
-              <Box sx={styles.gridRight}>Dec 31 2021</Box>
-              <Box sx={styles.gridLeft}>Txn Status</Box>
-              <Box sx={styles.gridRight}>
-                <span sx={styles.pendingText}>
-                  PENDING &nbsp;
+        <ModalContent>
+          <Text sx={styles.subtitle}>
+            NFT is being crafted by Oompa-Loompas and will be ready any moment
+            now.
+          </Text>
+          <Grid gap={2} columns={[2, null, 2]} sx={styles.infoGrid}>
+            <Box sx={styles.gridLeft}>Minted on</Box>
+            <Box sx={styles.gridRight}>{mintedOn}</Box>
+            <Box sx={styles.gridLeft}>Txn Status</Box>
+            <Box sx={styles.gridRight}>
+              <span sx={styles.pendingText}>
+                {txnStatus} &nbsp;
+                {txnStatus === "PENDING" && (
                   <Loader
                     type="TailSpin"
                     color="#000000"
@@ -45,23 +45,27 @@ const MyModal = (props) => {
                     width={14}
                     sx={styles.inline}
                   />
-                </span>
-              </Box>
-              <Box sx={styles.gridLeft}>Txn Fees</Box>
-              <Box sx={styles.gridRight}>$99.9</Box>
-            </Grid>
-          </ModalContent>
-          <ModalFooter>
-            <Button
-              variant="secondary"
-              sx={styles.mainButton}
-              onClick={onClose}
-            >
+                )}
+              </span>
+            </Box>
+            <Box sx={styles.gridLeft}>Txn Fees</Box>
+            <Box sx={styles.gridRight}>Matic {txnValue}</Box>
+            {gasUsed && (
+              <>
+                <Box sx={styles.gridLeft}>Gas Used</Box>
+                <Box sx={styles.gridRight}>{gasUsed}</Box>
+              </>
+            )}
+          </Grid>
+        </ModalContent>
+        <ModalFooter>
+          <a href={txnLink} target="_blank">
+            <Button variant="secondary" sx={styles.mainButton}>
               View Transaction in Explorer
             </Button>
-          </ModalFooter>
-        </Box>
-      )}
+          </a>
+        </ModalFooter>
+      </Box>
     </Modal>
   );
 };
@@ -99,6 +103,10 @@ const styles = {
     backgroundColor: "primary",
     padding: "2em",
     borderRadius: "10px",
+
+    a: {
+      textDecoration: "none",
+    },
   },
   title: {
     textAlign: "center",
@@ -107,7 +115,7 @@ const styles = {
     margin: "1em",
     padding: "1em",
     textAlign: "center",
-    fontWeight: "semiBold",
+    fontWeight: "bold",
   },
   fullWidth: {
     width: "100%",

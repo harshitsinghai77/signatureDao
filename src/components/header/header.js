@@ -7,7 +7,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { DrawerProvider } from "contexts/drawer/drawer-provider";
 import NavbarDrawer from "./navbar-drawer";
 import Logo from "components/logo";
-import { getWeb3Modal } from "utils/web3connect";
+import { getWeb3Modal, switchNetwork } from "utils/web3connect";
 import { Web3CreateContext } from "contexts/web3-context";
 import {
   SET_WEB3_PROVIDER,
@@ -39,7 +39,7 @@ export default function Header() {
       // We plug the initial `provider` into ethers.js and get back
       // a Web3Provider. This will add on methods from ethers.js and
       // event listeners such as `.on()` will be different.
-      const web3Provider = new Web3Provider(provider);
+      const web3Provider = new Web3Provider(provider, "any");
 
       const signer = web3Provider.getSigner();
       const address = await signer.getAddress();
@@ -77,20 +77,12 @@ export default function Header() {
         });
       };
 
-      const handleDisconnect = (error) => {
-        // eslint-disable-next-line no-console
-        console.log("disconnect", error);
-        onWeb3Disconnect();
-      };
-
       provider.on("chainChanged", handleChainChanged);
-      provider.on("disconnect", handleDisconnect);
 
       // Subscription Cleanup
       return () => {
         if (provider.removeListener) {
           provider.removeListener("chainChanged", handleChainChanged);
-          provider.removeListener("disconnect", handleDisconnect);
         }
       };
     }
@@ -130,7 +122,11 @@ export default function Header() {
 
                 <Flex>
                   {provider && !(chainId === CURRENT_NETWORK?.chainId) && (
-                    <Button variant="text" sx={styles.error}>
+                    <Button
+                      variant="text"
+                      sx={styles.error}
+                      onClick={switchNetwork}
+                    >
                       Change to {CURRENT_NETWORK?.name}
                     </Button>
                   )}

@@ -26,17 +26,37 @@ export const getWeb3Modal = () => {
   return web3Modal;
 };
 
-export const LogoutWeb3Modal = async () => {
-  await web3Modal.clearCachedProvider();
-  setTimeout(() => {
-    window.location.reload();
-  }, 1);
-};
-
-export const GetWalletProvider = async () => {
-  const web3Modalprovider = await web3Modal.connect();
-  const provider = new Web3Provider(web3Modalprovider);
-  return provider;
+export const switchNetwork = async () => {
+  if (!window.ethereum) return;
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x4" }],
+    });
+  } catch (e) {
+    if (e.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61",
+              chainName: "Smart Chain - Testnet",
+              nativeCurrency: {
+                name: "Binance",
+                symbol: "BNB", // 2-6 characters long
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://testnet.bscscan.com"],
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+            },
+          ],
+        });
+      } catch (addError) {
+        console.error(addError);
+      }
+    }
+  }
 };
 
 export const defaultProvider = ethers.getDefaultProvider(

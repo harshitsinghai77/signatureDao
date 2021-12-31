@@ -11,6 +11,12 @@ import {
   Button,
 } from "theme-ui";
 import { rgba } from "polished";
+import { ethers } from "ethers";
+
+import CanvasText from "components/canvasText/CanvasText";
+import CanvasSignature from "components/canvasText/canvasSignature";
+import Modal from "components/modal/";
+import ConfettiComponent from "components/confetti/";
 
 import { getContract } from "utils/getContact";
 import {
@@ -22,11 +28,7 @@ import {
 } from "utils/signature";
 import { Web3CreateContext } from "contexts/web3-context";
 import { defaultProvider } from "utils/web3connect";
-
-import CanvasText from "components/canvasText/CanvasText";
-import CanvasSignature from "components/canvasText/canvasSignature";
-import Modal from "components/modal/";
-import ConfettiComponent from "components/confetti/";
+import { TRANSACTION_LINK } from "utils/constants";
 
 import paypal from "assets/images/paypal.png";
 import google from "assets/images/google.png";
@@ -48,7 +50,7 @@ const logos = [
 ];
 
 // if true then use canvas to create singature else create and use SVG as an NFT
-const enableCanvasSignature = true;
+const enableCanvasSignature = false;
 
 const HomePage = () => {
   const { state } = useContext(Web3CreateContext);
@@ -64,6 +66,8 @@ const HomePage = () => {
   const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [toggleHandSignature, setToggleHandSignature] = useState(false);
+  const [txn, setTxn] = useState();
+  const [openModal, setOpenModal] = useState(false);
 
   const onChangeSignature = (event) => {
     const signature = event.target.value;
@@ -78,25 +82,32 @@ const HomePage = () => {
     setTotalPrice(price.toFixed(3));
   };
 
+  const getSignature = async () => {
+    let signatureNFT;
+    if (toggleHandSignature) {
+      // HandwrittenSignature
+      const base64EncodedImage = getHandwrittenCanvasSignature();
+      signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
+    } else if (enableCanvasSignature) {
+      // Export text signature from canvas as png
+      const base64EncodedImage = getTextCanvasSignature();
+      signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
+    } else {
+      // Export tex signature as SVG
+      const signatureSVG = exportSignatureAsSVG(signature);
+      signatureNFT = await convertToBuffer(signatureSVG);
+    }
+    return signatureNFT;
+  };
+
   const onClaimNFT = async (e) => {
     e.preventDefault();
     if (!signature || !web3Provider) return;
 
-    let signatureNFT;
-    if (enableCanvasSignature) {
-      // Export signature from canvas as png
-      const base64EncodedImage = textCanvasRef.current.getImg();
-      signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
-    } else {
-      // Export signature as SVG
-      const signatureSVG = exportSignatureAsSVG(signature);
-      signatureNFT = await convertToBuffer(signatureSVG);
-    }
+    const signatureNFT = await getSignature();
+    if (!signatureNFT) return;
 
-    // if handwritten
-    // const base64EncodedImage = getHandwrittenCanvasSignature()
-    // signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
-
+    // Add signature to IPFS
     const imghash = await addDataToIPFS(signatureNFT);
 
     // // Create NFT metadata and add it to IPFS
@@ -105,19 +116,62 @@ const HomePage = () => {
 
     const signer = web3Provider.getSigner();
     const contract = getContract(signer);
-    const value = totalPrice * 10 ** 18;
-    const tx = await contract._mint(
+    const mintValue = totalPrice * 10 ** 18;
+    const nftTxn = await contract._mint(
       signature.length,
       signature,
       `ipfs://${ipfsNFTMetadata}`,
       {
-        value: ethers.BigNumber.from(value.toString()),
+        value: ethers.BigNumber.from(mintValue.toString()),
         gasLimit: 6000000,
       }
     );
-    await tx.wait();
-    console.log(tx.hash);
-    setShowConfetti(true);
+    setTxn({
+      mintedOn: new Date().toDateString(),
+      txnStatus: "PENDING",
+      txnValue: mintValue,
+      txnHash: nftTxn.hash,
+      txnLink: TRANSACTION_LINK + nftTxn.hash,
+    });
+    setOpenModal(true);
+    await nftTxn.wait();
+    await getTransactionReceipt(nftTxn.hash);
+  };
+
+  const getTransactionReceipt = async (txnHash) => {
+    const txReceipt = await web3Provider.getTransactionReceipt(txnHash);
+    // The status of a transaction is 1 is successful or 0 if it was reverted.
+    // The block hash of the block that this transaction was included in.
+    if (txReceipt && txReceipt.blockNumber && txReceipt.status) {
+      setTxn((prevPerson) => ({
+        ...prevPerson,
+        txnStatus: "CONFIRMED",
+        gasUsed: txReceipt.gasUsed.toString(), //The amount of gas actually used by this transaction.
+      }));
+      return;
+    }
+    setTxn((prevPerson) => ({
+      ...prevPerson,
+      txnStatus: "REVERTED",
+    }));
+  };
+
+  const testModal = async () => {
+    const txnHash =
+      "0x6c8ee629793671f46cab0d5571560e3f2716b6ab520fbc7994c9da3c446d9f15";
+    setTxn({
+      mintedOn: new Date().toDateString(),
+      txnStatus: "PENDING",
+      txnValue: 1000,
+      txnHash: txnHash,
+      txnLink: TRANSACTION_LINK + txnHash,
+    });
+    setOpenModal(true);
+
+    let timer = setTimeout(async () => {
+      await getTransactionReceipt(txnHash);
+    }, 5000);
+    // clearTimeout(timer);
   };
 
   // Create a function to get random names using API call
@@ -160,6 +214,12 @@ const HomePage = () => {
     return <h1 sx={styles.signatureText}>{signature || randomName}</h1>;
   };
 
+  const getTextCanvasSignature = () => {
+    if (!textCanvasRef.current) return;
+    const textCanvasSignature = textCanvasRef.current.toDataURL("image/png");
+    return textCanvasSignature;
+  };
+
   const getHandwrittenCanvasSignature = () => {
     if (!handwrittenCanvasRef.current) return;
     const handwrittenSignature =
@@ -168,9 +228,12 @@ const HomePage = () => {
   };
 
   const clearHandwrittenCanvasSignature = () => {
-    console.log("handwrittenCanvasRef", handwrittenCanvasRef);
     if (!handwrittenCanvasRef.current) return;
     handwrittenCanvasRef.current.clear();
+  };
+
+  const onCloseModal = () => {
+    setOpenModal((prevState) => !prevState);
   };
 
   useEffect(() => {
@@ -184,9 +247,9 @@ const HomePage = () => {
 
   return (
     <>
-      <Box as="section" id="home" sx={styles.section}>
+      <Box as="section" id="home" sx={(styles.section, styles.random)}>
+        {txn && <Modal open={openModal} txn={txn} onClose={onCloseModal} />}
         <Container>
-          <Modal open={true} />
           {/* {showConfetti && <ConfettiComponent />} */}
           <Box sx={styles.contentWrapper}>
             <Box sx={styles.bannerContent}>
@@ -216,6 +279,8 @@ const HomePage = () => {
                   ? "Type your signature "
                   : "Get your own custom handwritten signature"}
               </Button>
+
+              <Button onClick={testModal}>TesModal</Button>
 
               <Flex as="form" sx={(styles.form, styles.signatureForm)}>
                 <Text as="p">
@@ -248,6 +313,8 @@ const HomePage = () => {
 export default HomePage;
 
 // boxShadow: "inset 0px 0px 0 2000px rgba(0,0,0,0.5)",
+// rgba(0, 0, 0, 0.5)
+
 const styles = {
   section: {
     backgroundColor: "#FFFCF7",
