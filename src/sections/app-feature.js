@@ -2,34 +2,34 @@
 import { jsx, Box, Grid, Flex, Container, Image, Text } from 'theme-ui';
 import SectionHeading from 'components/section-heading';
 import { LearnMore } from 'components/link';
-import app from 'assets/images/app.png';
+import celebration from 'assets/images/celebration.png';
 import emoji from 'assets/images/icons/emoji.png';
 import check from 'assets/images/icons/check-circle.png';
 
 const data = [
   {
     id: 1,
-    label: 'Medical and vision',
+    label: 'Governance DAO',
   },
   {
     id: 2,
-    label: 'Life insurance',
+    label: 'Web3',
   },
   {
     id: 3,
-    label: '400(k) savings',
+    label: 'Metaverse',
   },
   {
     id: 4,
-    label: 'HSAs and FSAs',
+    label: 'DeFi',
   },
   {
     id: 5,
-    label: 'Commuter benefits',
+    label: 'Gaming',
   },
   {
     id: 6,
-    label: '529 college savings',
+    label: 'Rewards 😉',
   },
 ];
 
@@ -42,8 +42,10 @@ const AppFeature = () => {
             <SectionHeading
               emoji={emoji}
               sx={styles.heading}
-              title="Built in one app to make instant reply with in lowest minutes"
-              description="Get your tests delivered at let home collect sample from the victory of the managements that supplies best design system guidelines ever."
+              title="Beautiful, minimal and easy for beginners and experts alike"
+              description="Claim your Signature NFT in less steps than it takes to
+              microwave last night's pizza. Mint, sit back, and enjoy the feeling
+              of being a part of this exclusive community."
             />
             <Box sx={styles.features}>
               {data?.map(({ id, label }) => (
@@ -53,10 +55,10 @@ const AppFeature = () => {
                 </Flex>
               ))}
             </Box>
-            <LearnMore label="Explore more" path="#!" />
+            {/* <LearnMore label="Explore more" path="#!" /> */}
           </Box>
           <Box sx={styles.illustration}>
-            <Image src={app} alt="workHard" />
+            <Image src={celebration} alt="workHard" />
           </Box>
         </Grid>
       </Container>
@@ -106,6 +108,7 @@ const styles = {
     lineHeight: 2.81,
     ml: ['20px', 0],
     mt: [null, null, null, 6, 0],
+    mb: [null, null, null, 6, 10],
     img: {
       mr: '10px',
       mt: '11px',
@@ -116,14 +119,18 @@ const styles = {
     },
   },
   illustration: {
-    mb: [0, null, null, null, '-150px', '-260px'],
+    mb: [0, null, null, null, '-150px', '-200px'],
     mt: [0],
     zIndex: '-1',
     img: {
       display: ['none', null, null, null, 'block'],
+      img: {
+        maxWidth: [null, null, null, '80%', '80%', '80%', '80%'],
+        maxHeight: [null, null, null, '80%', '80%', '80%', '80%'],
+      }
     },
     '@media screen and (max-width: 767px)': {
-      background: `transparent url(${app}) no-repeat center top / cover`,
+      background: `transparent url(${celebration}) no-repeat center top / cover`,
       width: '100%',
       minHeight: 310,
       marginBottom: 40,

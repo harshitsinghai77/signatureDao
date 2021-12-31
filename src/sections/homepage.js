@@ -174,9 +174,9 @@ const HomePage = () => {
     // clearTimeout(timer);
   };
 
-  // Create a function to get random names using API call
+  // Create a function to get random english names using API call
   const getRandomName = async () => {
-    const response = await fetch("https://randomuser.me/api/");
+    const response = await fetch("https://randomuser.me/api/?nat=us&results=1");
     const data = await response.json();
     setRandomName(data.results[0].name.first + " " + data.results[0].name.last);
   };
@@ -269,18 +269,7 @@ const HomePage = () => {
                 <Button onClick={onClaimNFT}>Claim NFT</Button>
               </Flex>
 
-              <Button
-                onClick={() =>
-                  setToggleHandSignature((prevState) => !prevState)
-                }
-                variant="secondary"
-              >
-                {toggleHandSignature
-                  ? "Type your signature "
-                  : "Get your own custom handwritten signature"}
-              </Button>
-
-              <Button onClick={testModal}>TesModal</Button>
+              {/* <Button onClick={testModal}>TesModal</Button> */}
 
               <Flex as="form" sx={(styles.form, styles.signatureForm)}>
                 <Text as="p">
@@ -302,7 +291,17 @@ const HomePage = () => {
               )}
             </Flex>
             {/* <Button onClick={handwrittenCanvasSignature}>Trim</Button> */}
-            <Button onClick={clearHandwrittenCanvasSignature}>Clear</Button>
+            <Button
+                onClick={() =>
+                  setToggleHandSignature((prevState) => !prevState)
+                }
+                variant="secondary"
+              >
+                {toggleHandSignature
+                  ? "Type your signature "
+                  : "Get your own custom handwritten signature"}
+              </Button>
+              <Button onClick={clearHandwrittenCanvasSignature}>Clear</Button>
           </Box>
         </Container>
       </Box>

@@ -14,7 +14,7 @@ export default function Footer() {
           <Flex sx={styles.copyright}>
             <Logo isWhite />
             <Text as="span">
-              &copy; Copyright by {new Date().getFullYear()} RedQ, Inc
+              &copy; Copyright {new Date().getFullYear()} One Million DAO
             </Text>
           </Flex>
           <Flex as="ul" sx={styles.footerNav}>

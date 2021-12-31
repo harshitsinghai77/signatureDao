@@ -5,12 +5,19 @@ import { jsx, Box, Container } from 'theme-ui';
 import Tabs, { TabPane } from 'rc-tabs';
 import TabTitle from 'components/tabs/tab-title';
 import TabContent from 'components/tabs/tab-content';
+
 import Currency from 'components/icons/currency';
 import Cog from 'components/icons/cog';
 import PieChart from 'components/icons/pie-chart';
 import Suitcase from 'components/icons/suitcase';
 import BarChart from 'components/icons/bar-chart';
-import dashboard from 'assets/images/dashboard.png';
+
+import about from 'assets/images/about.png';
+import brain from 'assets/images/brain.png';
+import whitepaper from 'assets/images/whitepaper.png';
+import airdrop from 'assets/images/airdrop.png';
+import signaturedao from 'assets/images/signaturedao.png';
+import bitcoin from 'assets/images/bitcoin.png';
 
 const data = [
   {
@@ -23,7 +30,7 @@ const data = [
     ],
     tabContent: [
       {
-        image: dashboard,
+        image: about,
         title: `Personalized, one and only signature NFT`,
         description: `Grab your spot on The Million Signature DAO Mega-NFT. Discounts for popular NFT holders, including CryptoPunks, CryptoKitties, Bored Ape Yacht Club, Adidas Originals, PUNKS Comic, Loot, and many more!`,
         readMore: '#introduce-quality',
@@ -40,7 +47,7 @@ const data = [
     ],
     tabContent: [
       {
-        image: dashboard,
+        image: brain,
         title: `Support NFT, DeFi and Metaverse communities`,
         description: `Our vision is to creating a fair and transparent system to support artists, developers and community members of the emerging NFT, DeFi and metaverse space.`,
         readMore: '#introduce-quality',
@@ -57,7 +64,7 @@ const data = [
     ],
     tabContent: [
       {
-        image: dashboard,
+        image: bitcoin,
         title: `Third quality feature that boost your website rank & performance`,
         description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
         readMore: '#introduce-quality',
@@ -74,7 +81,7 @@ const data = [
     ],
     tabContent: [
       {
-        image: dashboard,
+        image: whitepaper,
         title: `Fourth quality feature that boost your website rank & performance`,
         description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
         readMore: '#introduce-quality',
@@ -91,7 +98,7 @@ const data = [
     ],
     tabContent: [
       {
-        image: dashboard,
+        image: signaturedao,
         title: `Transparant, Open and Accountable goverenence`,
         description: `The incredible One Million Signature DAO community will hold an NFT of one million pixels with 200,000+ signatures empowering them to support various communities in the Web3 world. 40 + 10 + 30 + 10 + 10`,
         readMore: '#introduce-quality',
@@ -108,7 +115,7 @@ const data = [
     ],
     tabContent: [
       {
-        image: dashboard,
+        image: airdrop,
         title: `Fifth quality feature that boost your website rank & performance`,
         description: `Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents. Get your tests delivered at let home collect sample from the victory of the supplies design system.`,
         readMore: '#introduce-quality',

@@ -3,34 +3,36 @@ import { jsx, Box, Container, Grid } from 'theme-ui';
 import SectionHeading from 'components/section-heading';
 import Accordion from 'components/accordion/accordion';
 import Image from 'components/image';
-import messenger from 'assets/images/messenger.png';
+import document from 'assets/images/document.png';
 import emoji from 'assets/images/icons/emoji-2.png';
 
 const data = [
   {
-    title: 'Organize your project content',
+    title: 'Mint your signature, and own it',
     contents: (
       <div>
-        Get your blood tests delivered at let collect sample from the victory of
-        the managements that supplies best design system guidelines ever.
+        Type a signature or draw it, and claim it to recieve a personalized 
+        NFT on your address. Use it as your identity, digital signature, or 
+        anything else you can imagine!
       </div>
     ),
   },
   {
-    title: 'Collaborate your documents easily',
+    title: 'Be part of an exclusive community eligible for airdrops and rewards',
     contents: (
       <div>
-        Get your blood tests delivered at let collect sample from the victory of
-        the managements that supplies best design system guidelines ever.
+        Own a Signature NFT and gain access to a whole world of upcoming airdrops,
+        reward NFTs, and much more!
       </div>
     ),
   },
   {
-    title: `Build your team's knowledge base`,
+    title: `Be a part of The One Million Signature DAO`,
     contents: (
       <div>
-        Get your blood tests delivered at let collect sample from the victory of
-        the managements that supplies best design system guidelines ever.
+        Be a part of the revolution, get the early mover advantage, and support and grow
+        with the best decentralized communities as a core member of the incredible
+        One Million Signature DAO.
       </div>
     ),
   },
@@ -42,14 +44,14 @@ const PremiumFeature = () => {
       <Container>
         <Grid sx={styles.grid}>
           <Box as="figure" sx={styles.illustration}>
-            <Image src={messenger} alt="messenger" />
+            <Image src={document} alt="document" />
           </Box>
           <Box sx={styles.rightContent}>
             <SectionHeading
               emoji={emoji}
               sx={styles.heading}
-              title="Meet our premium features that will make you wow"
-              description="Build an incredible workplace and grow your business with Gusto’s all-in-one platform with amazing contents."
+              title="Claim a spot on the One Million NFT"
+              description="Mint your unique Signature NFT and join an incredible community of fellow signers that aim to support the NFT, DeFi and Metaverse communities."
             />
             <Box sx={styles.accordionGroup}>
               <Accordion items={data} />
@@ -97,6 +99,11 @@ const styles = {
   },
   illustration: {
     mb: [-6, null, null, -8, 0],
+    // decrease the size of the image
+    img: {
+      maxWidth: [null, null, null, '60%', '60%', '60%', '60%'],
+      maxHeight: [null, null, null, '60%', '60%', '60%', '60%'],
+    }
   },
   accordionGroup: {
     m: [null, null, null, '0 auto', 'unset'],

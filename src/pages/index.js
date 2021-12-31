@@ -23,12 +23,12 @@ export default function IndexPage() {
             description="Collection of free top of the line startup landing templates built using react/ next js. Free to download, simply edit and deploy! Updated weekly!"
           />
           <Homepage />
-          <Support />
-          {/* <PremiumFeature /> */}
-          {/* <AppFeature /> */}
+          {/* <Support /> */}
+          <PremiumFeature />
+          <AppFeature />
           <Dashboard />
           {/* <Pricing /> */}
-          {/* <Testimonials /> */}
+          <Testimonials />
           <Subscribe />
         </Layout>
       </Web3ContextProvider>

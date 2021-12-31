@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx, Box, Heading, Text, Button } from 'theme-ui';
+import { jsx, Box, Heading, Text, Button, Image } from 'theme-ui';
 
 const TabContent = ({ tabContent }) => {
   return tabContent.map((item, index) => (
@@ -9,9 +9,7 @@ const TabContent = ({ tabContent }) => {
         <Text as="p">{item.description}</Text>
         <Button>More Details</Button>
       </Box>
-      <Box
-        sx={{ backgroundImage: `url(${item?.image})`, ...styles.illustration }}
-      />
+      <Image src={item?.image} alt="celebration" sx={styles.illustration} />
     </Box>
   ));
 };
@@ -47,11 +45,12 @@ const styles = {
   illustration: {
     alignItems: 'flex-start',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
+    backgroundSize: 'contain',
     borderRadius: [5, null, null, 0],
     display: 'flex',
-    minHeight: [256, null, null, 538, 470, 510, 633],
-    mb: [5, null, null, null, 0],
-    width: '100%',
+    // minHeight: [256, null, null, 538, 470, 510, 633],
+    mb: [5, null, null, null, 5],
+    height: "40em",
+    ml: [null, null, null, null, '6em'],
   },
 };
