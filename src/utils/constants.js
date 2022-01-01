@@ -73,7 +73,6 @@ export const NETWORKS = {
 };
 
 export const getNetwork = (chainId) => {
-  console.log("getNetwork", chainId);
   const chainIdStr = parseInt(chainId);
   const filtereNetwork = Object.keys(NETWORKS).filter(
     (el) => NETWORKS[el].chainId === chainIdStr

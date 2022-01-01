@@ -11,7 +11,7 @@ import {
   Button,
 } from "theme-ui";
 import { rgba } from "polished";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 
 import CanvasText from "components/canvasText/CanvasText";
 import CanvasSignature from "components/canvasText/canvasSignature";
@@ -61,6 +61,8 @@ const HomePage = () => {
 
   const [signature, setSignature] = useState("");
   const [randomName, setRandomName] = useState("");
+  const [xPricePerUnit, setXPricePerUnit] = useState(0.02);
+  const [pricePerUnit, setPricePerUnit] = useState(0.01);
   const [isEligibleToMint, setIsEligibleToMint] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
@@ -73,9 +75,9 @@ const HomePage = () => {
     const signature = event.target.value;
     let price;
     if (isEligibleToDiscount) {
-      price = signature.length * 0.01;
+      price = signature.length * pricePerUnit;
     } else {
-      price = signature.length * 0.02;
+      price = signature.length * xPricePerUnit;
     }
     setSignature(signature);
     setTotalPrice(price.toFixed(3));
@@ -181,11 +183,20 @@ const HomePage = () => {
     setRandomName(data.results[0].name.first + " " + data.results[0].name.last);
   };
 
+  const getPriceFromContract = async () => {
+    const contract = getContract(defaultProvider);
+    let xPricePerUnit = await contract.xPricePerUnit();
+    let pricePerUnit = await contract.pricePerUnit();
+
+    xPricePerUnit = ethers.utils.formatEther(xPricePerUnit).toString();
+    pricePerUnit = ethers.utils.formatEther(pricePerUnit).toString();
+    setXPricePerUnit(xPricePerUnit);
+    setPricePerUnit(pricePerUnit);
+  };
+
   const getUserInformation = async () => {
     const contract = getContract(defaultProvider);
-    console.log("address", address);
     const isEligibleToDiscount = await contract.checkElegibleMember(address);
-    console.log("isEligibleToDiscount", isEligibleToDiscount);
     const isEligibleToMint = await contract.addressToSignature(address);
     console.log("isEligibleToMint", isEligibleToMint);
     console.log(
@@ -200,11 +211,6 @@ const HomePage = () => {
       console.log("User has already minted the token");
       setShowConfetti(true);
     }
-    console.log(
-      "isEligibleToDiscount",
-      isEligibleToDiscount,
-      typeof isEligibleToDiscount
-    );
     setIsEligibleToDiscount(isEligibleToDiscount);
   };
 
@@ -249,6 +255,7 @@ const HomePage = () => {
 
   useEffect(() => {
     getRandomName();
+    getPriceFromContract();
   }, []);
 
   return (
@@ -256,7 +263,7 @@ const HomePage = () => {
       <Box as="section" id="home" sx={(styles.section, styles.random)}>
         {txn && <Modal open={openModal} txn={txn} onClose={onCloseModal} />}
         <Container>
-          {/* {showConfetti && <ConfettiComponent />} */}
+          {showConfetti && <ConfettiComponent />}
           <Box sx={styles.contentWrapper}>
             <Box sx={styles.bannerContent}>
               <Heading as="h1">Get Your Own Personalized NFT Signature</Heading>
@@ -272,7 +279,9 @@ const HomePage = () => {
                   value={signature || ""}
                   onChange={onChangeSignature}
                 />
-                <Button onClick={onClaimNFT}>Claim NFT</Button>
+                <Button disable onClick={onClaimNFT}>
+                  Claim NFT
+                </Button>
               </Flex>
 
               {/* <Button onClick={testModal}>TesModal</Button> */}

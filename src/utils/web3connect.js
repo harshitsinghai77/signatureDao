@@ -1,5 +1,4 @@
 import Web3Modal from "web3modal";
-import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Authereum from "authereum";
 import { INFURA_ID, CURRENT_NETWORK } from "utils/constants";
@@ -32,7 +31,7 @@ export const switchNetwork = async () => {
   try {
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x4" }],
+      params: [{ chainId: "0x13881" }],
     });
   } catch (e) {
     if (e.code === 4902) {
@@ -41,15 +40,17 @@ export const switchNetwork = async () => {
           method: "wallet_addEthereumChain",
           params: [
             {
-              chainId: "0x61",
-              chainName: "Smart Chain - Testnet",
+              chainId: "13881",
+              chainName: "POLYGON Mumbai",
               nativeCurrency: {
-                name: "Binance",
-                symbol: "BNB", // 2-6 characters long
+                name: "MATIC",
+                symbol: "MATIC", // 2-6 characters long
                 decimals: 18,
               },
-              blockExplorerUrls: ["https://testnet.bscscan.com"],
-              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+              blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
+              rpcUrls: [
+                "https://polygon-mumbai.g.alchemy.com/v2/Fdpvr1ELduCwcOyg8DRM8CPjetBYg0QB",
+              ],
             },
           ],
         });
@@ -65,5 +66,7 @@ export const switchNetwork = async () => {
 //   INFURA_ID
 // );
 
-
-export const defaultProvider = new JsonRpcProvider(CURRENT_NETWORK.rpcUrl, CURRENT_NETWORK.name);
+export const defaultProvider = new JsonRpcProvider(
+  CURRENT_NETWORK.rpcUrl,
+  CURRENT_NETWORK.name
+);
