@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Authereum from "authereum";
 import { INFURA_ID, CURRENT_NETWORK } from "utils/constants";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 // const INFURA_ID = "6f006a0521514865af0036763e47b34e";
 
@@ -59,7 +60,10 @@ export const switchNetwork = async () => {
   }
 };
 
-export const defaultProvider = ethers.getDefaultProvider(
-  CURRENT_NETWORK.name,
-  INFURA_ID
-);
+// export const defaultProvider = ethers.getDefaultProvider(
+//   CURRENT_NETWORK.name,
+//   INFURA_ID
+// );
+
+
+export const defaultProvider = new JsonRpcProvider(CURRENT_NETWORK.rpcUrl, CURRENT_NETWORK.name);

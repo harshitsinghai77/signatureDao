@@ -1,4 +1,4 @@
-export const INFURA_ID = "460f40a260564ac4a4f4b3fffb032dad";
+export const INFURA_ID = "Fdpvr1ELduCwcOyg8DRM8CPjetBYg0QB"; //"460f40a260564ac4a4f4b3fffb032dad";
 
 export const NETWORKS = {
   mainnet: {
@@ -58,21 +58,22 @@ export const NETWORKS = {
     gasPrice: 1000000000,
     rpcUrl: "https://polygon-rpc.com/",
     faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://explorer-mainnet.maticvigil.com//",
+    blockExplorer: "https://polygonscan.com/",
   },
   mumbai: {
-    name: "mumbai",
+    name: "maticmum",
     color: "#92D9FA",
     chainId: 80001,
     price: 1,
     gasPrice: 1000000000,
-    rpcUrl: "https://rpc-mumbai.maticvigil.com",
+    rpcUrl: `https://polygon-mumbai.g.alchemy.com/v2/Fdpvr1ELduCwcOyg8DRM8CPjetBYg0QB`,
     faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://mumbai-explorer.matic.today/",
+    blockExplorer: "https://mumbai.polygonscan.com/",
   },
 };
 
 export const getNetwork = (chainId) => {
+  console.log("getNetwork", chainId);
   const chainIdStr = parseInt(chainId);
   const filtereNetwork = Object.keys(NETWORKS).filter(
     (el) => NETWORKS[el].chainId === chainIdStr
@@ -82,4 +83,5 @@ export const getNetwork = (chainId) => {
 
 export const CURRENT_NETWORK = getNetwork(process.env.NEXT_PUBLIC_CHAIN_ID);
 
-export const TRANSACTION_LINK = "https://rinkeby.etherscan.io/tx/";
+export const TRANSACTION_LINK = CURRENT_NETWORK.blockExplorer + "tx/";
+// "https://rinkeby.etherscan.io/tx/";

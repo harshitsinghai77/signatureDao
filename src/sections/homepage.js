@@ -11,7 +11,7 @@ import {
   Button,
 } from "theme-ui";
 import { rgba } from "polished";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 import CanvasText from "components/canvasText/CanvasText";
 import CanvasSignature from "components/canvasText/canvasSignature";
@@ -116,13 +116,13 @@ const HomePage = () => {
 
     const signer = web3Provider.getSigner();
     const contract = getContract(signer);
-    const mintValue = totalPrice * 10 ** 18;
+    const mintValue = ethers.utils.parseEther(totalPrice);
     const nftTxn = await contract._mint(
       signature.length,
       signature,
       `ipfs://${ipfsNFTMetadata}`,
       {
-        value: ethers.BigNumber.from(mintValue.toString()),
+        value: mintValue,
         gasLimit: 6000000,
       }
     );
@@ -183,8 +183,11 @@ const HomePage = () => {
 
   const getUserInformation = async () => {
     const contract = getContract(defaultProvider);
-    const isEligibleToMint = await contract.addressToSignature(address);
+    console.log("address", address);
     const isEligibleToDiscount = await contract.checkElegibleMember(address);
+    console.log("isEligibleToDiscount", isEligibleToDiscount);
+    const isEligibleToMint = await contract.addressToSignature(address);
+    console.log("isEligibleToMint", isEligibleToMint);
     console.log(
       "isEligibleToMint",
       isEligibleToMint.toString(),

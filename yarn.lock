@@ -379,7 +379,7 @@
     "@ethersproject/bytes" "^5.5.0"
     "@ethersproject/properties" "^5.5.0"
 
-"@ethersproject/bignumber@5.5.0", "@ethersproject/bignumber@^5.5.0":
+"@ethersproject/bignumber@5.5.0", "@ethersproject/bignumber@^5.4.2", "@ethersproject/bignumber@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/bignumber/-/bignumber-5.5.0.tgz#875b143f04a216f4f8b96245bde942d42d279527"
   integrity sha512-6Xytlwvy6Rn3U3gKEc1vP7nR92frHkv6wtVr95LFR3jREXiCPzdWxKQ1cx4JGQBXxcguAwjA8murlYN2TSiEbg==
@@ -477,7 +477,7 @@
     "@ethersproject/bytes" "^5.5.0"
     js-sha3 "0.8.0"
 
-"@ethersproject/logger@5.5.0", "@ethersproject/logger@^5.5.0":
+"@ethersproject/logger@5.5.0", "@ethersproject/logger@^5.4.1", "@ethersproject/logger@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.5.0.tgz#0c2caebeff98e10aefa5aef27d7441c7fd18cf5d"
   integrity sha512-rIY/6WPm7T8n3qS2vuHTUBPdXHl+rGxWxW5okDfo9J4Z0+gRRZT0msvUdIJkE4/HS29GUMziwGaaKO2bWONBrg==
@@ -504,7 +504,7 @@
   dependencies:
     "@ethersproject/logger" "^5.5.0"
 
-"@ethersproject/providers@5.5.1", "@ethersproject/providers@^5.5.1":
+"@ethersproject/providers@5.5.1", "@ethersproject/providers@^5.4.5", "@ethersproject/providers@^5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.5.1.tgz#ba87e3c93219bbd2e2edf8b369873aee774abf04"
   integrity sha512-2zdD5sltACDWhjUE12Kucg2PcgM6V2q9JMyVvObtVGnzJu+QSmibbP+BHQyLWZUBfLApx2942+7DC5D+n4wBQQ==
@@ -2101,6 +2101,15 @@ cborg@^1.5.4, cborg@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/cborg/-/cborg-1.6.0.tgz#07975681efb2a1ee33c696c5b7bf62092fddc542"
   integrity sha512-zNgXCO0jlGDKh8EQO34PziChBZhOoLf3qjkS0VtKy4jEKjEX/PbrKYQ1QP+960rxmC3fUuN1yOeq4Frf2E9RTw==
+
+chain-provider@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/chain-provider/-/chain-provider-0.0.4.tgz#7c6f144be5b15fe91a2178ea9a865c7da5fcd5e5"
+  integrity sha512-G2GJ5u42WvkD8LefjOVUOILAuXMq+1BNQtJDzb6sMc+QJYF9OUklfEMi3UdS1U5PfX/5DRXiSWwQe/4AeZQmKQ==
+  dependencies:
+    "@ethersproject/bignumber" "^5.4.2"
+    "@ethersproject/logger" "^5.4.1"
+    "@ethersproject/providers" "^5.4.5"
 
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"

@@ -4,6 +4,7 @@ import { jsx, Text, Button, Box, Grid } from "theme-ui";
 import Loader from "react-loader-spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { BigNumber, ethers } from "ethers";
 
 const MyModal = ({ open, txn, onClose }) => {
   const { mintedOn, txnStatus, txnValue, txnLink, gasUsed } = txn;
@@ -49,7 +50,7 @@ const MyModal = ({ open, txn, onClose }) => {
               </span>
             </Box>
             <Box sx={styles.gridLeft}>Txn Fees</Box>
-            <Box sx={styles.gridRight}>Matic {txnValue}</Box>
+            <Box sx={styles.gridRight}>{ethers.utils.formatEther(txnValue)} MATIC</Box>
             {gasUsed && (
               <>
                 <Box sx={styles.gridLeft}>Gas Used</Box>
