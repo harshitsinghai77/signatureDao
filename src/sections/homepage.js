@@ -77,7 +77,6 @@ const HomePage = () => {
     } else {
       price = signature.length * 0.02;
     }
-
     setSignature(signature);
     setTotalPrice(price.toFixed(3));
   };
@@ -93,7 +92,7 @@ const HomePage = () => {
       const base64EncodedImage = getTextCanvasSignature();
       signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
     } else {
-      // Export tex signature as SVG
+      // Export text signature as SVG
       const signatureSVG = exportSignatureAsSVG(signature);
       signatureNFT = await convertToBuffer(signatureSVG);
     }
@@ -126,6 +125,7 @@ const HomePage = () => {
         gasLimit: 6000000,
       }
     );
+
     setTxn({
       mintedOn: new Date().toDateString(),
       txnStatus: "PENDING",
@@ -143,15 +143,15 @@ const HomePage = () => {
     // The status of a transaction is 1 is successful or 0 if it was reverted.
     // The block hash of the block that this transaction was included in.
     if (txReceipt && txReceipt.blockNumber && txReceipt.status) {
-      setTxn((prevPerson) => ({
-        ...prevPerson,
+      setTxn((prevTxn) => ({
+        ...prevTxn,
         txnStatus: "CONFIRMED",
         gasUsed: txReceipt.gasUsed.toString(), //The amount of gas actually used by this transaction.
       }));
       return;
     }
-    setTxn((prevPerson) => ({
-      ...prevPerson,
+    setTxn((prevTxn) => ({
+      ...prevTxn,
       txnStatus: "REVERTED",
     }));
   };
@@ -225,14 +225,17 @@ const HomePage = () => {
 
   const getHandwrittenCanvasSignature = () => {
     if (!handwrittenCanvasRef.current) return;
-    const handwrittenSignature =
-      handwrittenCanvasRef.current.toDataURL("image/png");
-    return handwrittenSignature;
+    const handSignature = handwrittenCanvasRef.current.toDataURL("image/png");
+    return handSignature;
   };
 
-  const clearHandwrittenCanvasSignature = () => {
-    if (!handwrittenCanvasRef.current) return;
-    handwrittenCanvasRef.current.clear();
+  const clearSignature = () => {
+    if (toggleHandSignature) {
+      if (!handwrittenCanvasRef.current) return;
+      handwrittenCanvasRef.current.clear();
+      return;
+    }
+    setSignature(" ");
   };
 
   const onCloseModal = () => {
@@ -293,18 +296,16 @@ const HomePage = () => {
                 renderTextSignature()
               )}
             </Flex>
-            {/* <Button onClick={handwrittenCanvasSignature}>Trim</Button> */}
+
             <Button
-                onClick={() =>
-                  setToggleHandSignature((prevState) => !prevState)
-                }
-                variant="secondary"
-              >
-                {toggleHandSignature
-                  ? "Type your signature "
-                  : "Get your own custom handwritten signature"}
-              </Button>
-              <Button onClick={clearHandwrittenCanvasSignature}>Clear</Button>
+              onClick={() => setToggleHandSignature((prevState) => !prevState)}
+              variant="secondary"
+            >
+              {toggleHandSignature
+                ? "Type your signature "
+                : "Create your own custom handwritten signature"}
+            </Button>
+            <Button onClick={clearSignature}>Clear</Button>
           </Box>
         </Container>
       </Box>
@@ -313,9 +314,6 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-// boxShadow: "inset 0px 0px 0 2000px rgba(0,0,0,0.5)",
-// rgba(0, 0, 0, 0.5)
 
 const styles = {
   section: {
