@@ -30,6 +30,7 @@ import {
 import { Web3CreateContext } from "contexts/web3-context";
 import { defaultProvider } from "utils/web3connect";
 import { TRANSACTION_LINK } from "utils/constants";
+import { calculateSignatureSizePrice } from "utils/getSignatureSizePrice"
 
 import paypal from "assets/images/paypal.png";
 import google from "assets/images/google.png";
@@ -62,8 +63,9 @@ const HomePage = () => {
 
   const [signature, setSignature] = useState("");
   const [randomName, setRandomName] = useState("");
-  const [xPricePerUnit, setXPricePerUnit] = useState(0.02);
-  const [pricePerUnit, setPricePerUnit] = useState(0.01);
+  const [xPricePerUnit, setXPricePerUnit] = useState(2);
+  const [pricePerUnit, setPricePerUnit] = useState(0.5);
+  const [customSignatureUnits, setCustomSignatureUnits] = useState([8, 16, 24]);
   const [isEligibleToMint, setIsEligibleToMint] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
@@ -137,7 +139,11 @@ const HomePage = () => {
       txnLink: TRANSACTION_LINK + nftTxn.hash,
     });
     setOpenModal(true);
-    await nftTxn.wait();
+    try {
+      await nftTxn.wait();
+    } catch (error) {
+      console.log(error);
+    }
     await getTransactionReceipt(nftTxn.hash);
   };
 
@@ -156,6 +162,7 @@ const HomePage = () => {
     setTxn((prevTxn) => ({
       ...prevTxn,
       txnStatus: "REVERTED",
+      gasUsed: txReceipt.gasUsed.toString()
     }));
   };
 
@@ -188,28 +195,23 @@ const HomePage = () => {
     const contract = getContract(defaultProvider);
     let xPricePerUnit = await contract.xPricePerUnit();
     let pricePerUnit = await contract.pricePerUnit();
+    let customSignatureUnits = await contract.getCustomSignatureUnits();
 
     xPricePerUnit = ethers.utils.formatEther(xPricePerUnit).toString();
     pricePerUnit = ethers.utils.formatEther(pricePerUnit).toString();
     setXPricePerUnit(xPricePerUnit);
     setPricePerUnit(pricePerUnit);
+    setCustomSignatureUnits(customSignatureUnits)
   };
 
   const getUserInformation = async () => {
     const contract = getContract(defaultProvider);
     const isEligibleToDiscount = await contract.checkElegibleMember(address);
     const isEligibleToMint = await contract.addressToSignature(address);
-    console.log("isEligibleToMint", isEligibleToMint);
-    console.log(
-      "isEligibleToMint",
-      isEligibleToMint.toString(),
-      typeof isEligibleToMint
-    );
     if (isEligibleToMint.toString() === "0") {
       setIsEligibleToMint(true);
     } else {
       // User has already minted the token
-      console.log("User has already minted the token");
       setShowConfetti(true);
     }
     setIsEligibleToDiscount(isEligibleToDiscount);
@@ -249,6 +251,18 @@ const HomePage = () => {
     setOpenModal((prevState) => !prevState);
   };
 
+  const onChangeSize = (e) => {
+    const priceValue = e.target.value
+    if (!priceValue) return
+    let calculatePriceValue = calculateSignatureSizePrice(customSignatureUnits, priceValue)
+    if (isEligibleToDiscount) {
+      calculatePriceValue *= pricePerUnit;
+    } else {
+      calculatePriceValue *= xPricePerUnit;
+    }
+    setTotalPrice(calculatePriceValue.toFixed(3));
+  }
+
   useEffect(() => {
     if (!address) return;
     getUserInformation();
@@ -287,7 +301,7 @@ const HomePage = () => {
 
               {/* <Button onClick={testModal}>TesModal</Button> */}
 
-              <Flex as="form" sx={(styles.form, styles.signatureForm)}>
+              <Flex as="form" sx={styles.signatureForm}>
                 <Text as="p">
                   <strong>
                     {isEligibleToDiscount
@@ -299,20 +313,20 @@ const HomePage = () => {
                 <Text as="p">MATIC to pay : {totalPrice}</Text>
               </Flex>
             </Box>
-            <Flex as="figure" sx={styles.bannerImage}>
-              {toggleHandSignature ? (
-                <CanvasSignature ref={handwrittenCanvasRef} />
-              ) : (
-                renderTextSignature()
-              )}
-            </Flex>
-            <RadioSelect
-              allOptions={[
-                { name: "Small" },
-                { name: "Medium" },
-                { name: "Large" },
-              ]}
-            />
+            <Box>
+              <Flex as="figure" sx={styles.bannerImage}>
+                {toggleHandSignature ? (
+                  <CanvasSignature ref={handwrittenCanvasRef} />
+                ) : (
+                  renderTextSignature()
+                )}
+              </Flex>
+              {toggleHandSignature && <Flex as="form" sx={styles.sizeRadio}>
+                <RadioSelect
+                  onSizeChange={onChangeSize}
+                />
+              </Flex>}
+            </Box>
             <Button
               onClick={() => setToggleHandSignature((prevState) => !prevState)}
               variant="secondary"
@@ -394,6 +408,10 @@ const styles = {
       fontSize: [0, 1, null, null, 2],
       minHeight: [40, 50, null, null, null, 60],
     },
+  },
+  sizeRadio: {
+    mt: "2%",
+    // mt: [10],
   },
   sponsoredBy: {
     alignItems: "center",

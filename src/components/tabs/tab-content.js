@@ -50,7 +50,7 @@ const styles = {
     display: 'flex',
     // minHeight: [256, null, null, 538, 470, 510, 633],
     mb: [5, null, null, null, 5],
-    height: "40em",
+    height: "35em",
     ml: [null, null, null, null, '6em'],
   },
 };

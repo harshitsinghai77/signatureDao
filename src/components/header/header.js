@@ -96,7 +96,7 @@ export default function Header() {
   return (
     <DrawerProvider>
       <Box sx={styles.headerWrapper}>
-        <Sticky enabled={false} top={0} activeClass="is-sticky" innerZ={100}>
+        <Sticky enabled={true} top={0} activeClass="is-sticky" innerZ={100}>
           <Box
             as="header"
             variant="layout.header"
@@ -171,7 +171,7 @@ const styles = {
     justifyContent: "space-between",
     backgroundColor: "#FFFCF7",
     header: {
-      position: "relative",
+      position: "fixed",
       left: 0,
       right: 0,
       py: [4],
@@ -192,7 +192,7 @@ const styles = {
     display: "flex",
     // alignItems: "center",
     justifyContent: "space-between",
-    // position: ['relative', null, null, 'static'],
+    position: ['relative', null, null, 'static'],
   },
   logo: {
     mr: [null, null, null, null, 30, 12],

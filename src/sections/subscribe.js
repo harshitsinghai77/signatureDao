@@ -2,7 +2,6 @@
 import { jsx, Box, Container } from "theme-ui";
 import { rgba } from "polished";
 import SectionHeading from "components/section-heading";
-import SubscriptionForm from "components/subscription-form";
 
 const Subscribe = () => {
   return (
@@ -13,7 +12,6 @@ const Subscribe = () => {
           title="Subscribe to get notified about update"
           description="By subscribing with your mail, you will accept our privacy policy"
         />
-        <SubscriptionForm sx={styles.subscriptionForm} />
       </Container>
     </Box>
   );
@@ -23,7 +21,7 @@ export default Subscribe;
 
 const styles = {
   section: {
-    backgroundColor: "#353448",
+    backgroundColor: "#FFFCF7",
     pt: [9, null, null, null, 10, 13, null],
     pb: [9, null, null, null, 11, 14, null],
   },

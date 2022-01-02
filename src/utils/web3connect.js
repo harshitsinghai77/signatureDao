@@ -31,7 +31,7 @@ export const switchNetwork = async () => {
   try {
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x13881" }],
+      params: [{ chainId: CURRENT_NETWORK.chainIdHex }],
     });
   } catch (e) {
     if (e.code === 4902) {
@@ -40,16 +40,16 @@ export const switchNetwork = async () => {
           method: "wallet_addEthereumChain",
           params: [
             {
-              chainId: "13881",
-              chainName: "POLYGON Mumbai",
+              chainId: CURRENT_NETWORK.chainIdHex,
+              chainName: CURRENT_NETWORK.name,
               nativeCurrency: {
-                name: "MATIC",
-                symbol: "MATIC", // 2-6 characters long
+                name: CURRENT_NETWORK.name,
+                symbol: CURRENT_NETWORK.token, // 2-6 characters long
                 decimals: 18,
               },
-              blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
+              blockExplorerUrls: [CURRENT_NETWORK.blockExplorer],
               rpcUrls: [
-                "https://polygon-mumbai.g.alchemy.com/v2/Fdpvr1ELduCwcOyg8DRM8CPjetBYg0QB",
+                CURRENT_NETWORK.blockExplorer,
               ],
             },
           ],

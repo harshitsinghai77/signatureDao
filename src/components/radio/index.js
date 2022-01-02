@@ -1,29 +1,23 @@
-import { Label, Radio } from "theme-ui";
+import { Label, Radio, Flex } from "theme-ui";
 
 const RadioSelect = ({ allOptions, onSizeChange }) => {
-  //   return allOptions.map((el) => (
-  //     <Label key={el.name}>
-  //       <Radio name={el.name} value="false" />
-  //       {el.name}
-  //     </Label>
-  //   ));
   return (
     <>
       <Label>
         <Radio
-          name="dark-mode"
-          value="true"
+          name="size-toggle"
+          value="small"
           defaultChecked={true}
           onChange={onSizeChange}
         />
         Small
       </Label>
       <Label>
-        <Radio name="dark-mode" value="false" onChange={onSizeChange} />
+        <Radio name="size-toggle" value="medium" onChange={onSizeChange} />
         Medium
       </Label>
       <Label>
-        <Radio name="dark-mode" value="false" onChange={onSizeChange} />
+        <Radio name="size-toggle" value="large" onChange={onSizeChange} />
         Large
       </Label>
     </>

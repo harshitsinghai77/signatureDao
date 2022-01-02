@@ -20,6 +20,11 @@
         "internalType": "uint256",
         "name": "initialMaxSize",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "customUnits",
+        "type": "uint16[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -281,6 +286,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint16[]",
+        "name": "newCustomUnits",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "changeCustomUnits",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "newXPricePerUnit",
         "type": "uint256"
@@ -310,6 +328,25 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "customSignatureUnits",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -348,6 +385,19 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCustomSignatureUnits",
+    "outputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "",
+        "type": "uint16[]"
       }
     ],
     "stateMutability": "view",

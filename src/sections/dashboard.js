@@ -23,7 +23,7 @@ const data = [
   {
     id: 1,
     tabPane: [
-      { 
+      {
         icon: <Currency />,
         title: 'About Us',
       },
@@ -173,7 +173,7 @@ const styles = {
     border: 0,
     color: 'white',
     '.rc-tabs-nav': {
-      mb: [8, null, null, 7, 10, null, 12],
+      mb: [6, null, null, 5, 7, null, 8],
     },
     '.rc-tabs-nav-wrap': {
       '::before': {
