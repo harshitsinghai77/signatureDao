@@ -17,6 +17,7 @@ import CanvasText from "components/canvasText/CanvasText";
 import CanvasSignature from "components/canvasText/canvasSignature";
 import Modal from "components/modal/";
 import ConfettiComponent from "components/confetti/";
+import RadioSelect from "components/radio";
 
 import { getContract } from "utils/getContact";
 import {
@@ -118,7 +119,7 @@ const HomePage = () => {
     const signer = web3Provider.getSigner();
     const contract = getContract(signer);
     const mintValue = ethers.utils.parseEther(totalPrice);
-    const nftTxn = await contract._mint(
+    const nftTxn = await contract.mintSignature(
       signature.length,
       signature,
       `ipfs://${ipfsNFTMetadata}`,
@@ -305,7 +306,13 @@ const HomePage = () => {
                 renderTextSignature()
               )}
             </Flex>
-
+            <RadioSelect
+              allOptions={[
+                { name: "Small" },
+                { name: "Medium" },
+                { name: "Large" },
+              ]}
+            />
             <Button
               onClick={() => setToggleHandSignature((prevState) => !prevState)}
               variant="secondary"
