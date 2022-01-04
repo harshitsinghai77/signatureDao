@@ -1,16 +1,5 @@
 /** @jsx jsx */
-import {
-  jsx,
-  Container,
-  Grid,
-  Box,
-  Flex,
-  Heading,
-  Text,
-  Button,
-} from "theme-ui";
-import { useRef } from "react";
-import SignatureCanvas from "react-signature-canvas";
+import { jsx, Container, Grid, Box, Flex, Heading, Text } from "theme-ui";
 
 import Image from "components/image";
 import support from "assets/images/support.png";
@@ -32,23 +21,6 @@ const data = [
 ];
 
 const Support = () => {
-  const refSignatureRef = useRef(null);
-
-  const trimSignature = () => {
-    if (!refSignatureRef.current) return;
-    console.log("Getting trimmed");
-    const trimmedSignature = refSignatureRef.current
-      .getTrimmedCanvas()
-      .toDataURL("image/png");
-
-    console.log("trimmedSignature", trimmedSignature);
-  };
-
-  const clearSignature = () => {
-    if (!refSignatureRef.current) return;
-    refSignatureRef.current.clear();
-  };
-
   return (
     <Box as="section" id="support" sx={styles.section}>
       <Container>
@@ -66,21 +38,6 @@ const Support = () => {
               </Box>
             </Flex>
           ))}
-          {/* <Box>
-            <SignatureCanvas
-              ref={(ref) => {
-                refSignatureRef.current = ref;
-              }}
-              // dotSize={1810}
-              penColor="#FFC059"
-              backgroundColor="black"
-              canvasProps={styles.canvasProps}
-            />
-            <Box sx={styles.canvasButton}>
-              <Button onClick={trimSignature}>Trim</Button>
-              <Button onClick={clearSignature}>Clear</Button>
-            </Box>
-          </Box> */}
         </Grid>
       </Container>
     </Box>

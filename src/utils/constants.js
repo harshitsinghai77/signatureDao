@@ -1,3 +1,5 @@
+import {CONTRACT_ADDRESS} from "./getContact"
+
 export const INFURA_ID = "Fdpvr1ELduCwcOyg8DRM8CPjetBYg0QB"; //"460f40a260564ac4a4f4b3fffb032dad";
 
 export const NETWORKS = {
@@ -100,3 +102,7 @@ export const CURRENT_NETWORK = getNetwork(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 export const TRANSACTION_LINK = CURRENT_NETWORK.blockExplorer + "tx/";
 // "https://rinkeby.etherscan.io/tx/";
+
+export const OPENSEA_LINK = 'https://testnets.opensea.io/assets/mumbai/' + CONTRACT_ADDRESS
+
+export const OPENSEA_COLLECTION_LINK = 'https://testnets.opensea.io/collection/1-million-signatures-rbidxckddt'

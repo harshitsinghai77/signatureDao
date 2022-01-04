@@ -7,7 +7,7 @@ const calculateConfettiPieces = (priceValue) => {
 
 const ConfettiComponent = () => {
   const { width, height } = useWindowSize();
-  return <Confetti width={width - 80} height={height * 4} />;
+  return <Confetti width={width - 80} height={height * 4} recycle={false} />;
 };
 
 export default ConfettiComponent;

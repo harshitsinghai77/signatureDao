@@ -9,9 +9,11 @@ import {
   Text,
   Input,
   Button,
+  Image,
 } from "theme-ui";
 import { rgba } from "polished";
 import { ethers } from "ethers";
+import Loader from "react-loader-spinner";
 
 import CanvasText from "components/canvasText/CanvasText";
 import CanvasSignature from "components/canvasText/canvasSignature";
@@ -22,15 +24,21 @@ import RadioSelect from "components/radio";
 import { getContract } from "utils/getContact";
 import {
   exportSignatureAsSVG,
-  exportSignatureAsPNG,
+  exportSignatureAsPNGFile,
   convertToBuffer,
   addDataToIPFS,
+  retrieveDataFromIPFS,
   createNFTMeta,
+  IPFS_RETRIEVE_URL,
 } from "utils/signature";
 import { Web3CreateContext } from "contexts/web3-context";
 import { defaultProvider } from "utils/web3connect";
-import { TRANSACTION_LINK } from "utils/constants";
-import { calculateSignatureSizePrice } from "utils/getSignatureSizePrice"
+import {
+  TRANSACTION_LINK,
+  OPENSEA_LINK,
+  OPENSEA_COLLECTION_LINK,
+} from "utils/constants";
+import { calculateSignatureSizePrice } from "utils/getSignatureSizePrice";
 
 import paypal from "assets/images/paypal.png";
 import google from "assets/images/google.png";
@@ -52,7 +60,7 @@ const logos = [
 ];
 
 // if true then use canvas to create singature else create and use SVG as an NFT
-const enableCanvasSignature = false;
+const enableCanvasSignature = true;
 
 const HomePage = () => {
   const { state } = useContext(Web3CreateContext);
@@ -69,33 +77,23 @@ const HomePage = () => {
   const [isEligibleToMint, setIsEligibleToMint] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isEligibleToDiscount, setIsEligibleToDiscount] = useState(false);
+  const [existingSignature, setExistingSignature] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [toggleHandSignature, setToggleHandSignature] = useState(false);
   const [txn, setTxn] = useState();
   const [openModal, setOpenModal] = useState(false);
-
-  const onChangeSignature = (event) => {
-    const signature = event.target.value;
-    let price;
-    if (isEligibleToDiscount) {
-      price = signature.length * pricePerUnit;
-    } else {
-      price = signature.length * xPricePerUnit;
-    }
-    setSignature(signature);
-    setTotalPrice(price.toFixed(3));
-  };
 
   const getSignature = async () => {
     let signatureNFT;
     if (toggleHandSignature) {
       // HandwrittenSignature
       const base64EncodedImage = getHandwrittenCanvasSignature();
-      signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
+      signatureNFT = await exportSignatureAsPNGFile(base64EncodedImage);
     } else if (enableCanvasSignature) {
       // Export text signature from canvas as png
       const base64EncodedImage = getTextCanvasSignature();
-      signatureNFT = await exportSignatureAsPNG(base64EncodedImage);
+      signatureNFT = await exportSignatureAsPNGFile(base64EncodedImage);
     } else {
       // Export text signature as SVG
       const signatureSVG = exportSignatureAsSVG(signature);
@@ -162,7 +160,7 @@ const HomePage = () => {
     setTxn((prevTxn) => ({
       ...prevTxn,
       txnStatus: "REVERTED",
-      gasUsed: txReceipt.gasUsed.toString()
+      gasUsed: txReceipt.gasUsed.toString(),
     }));
   };
 
@@ -191,7 +189,7 @@ const HomePage = () => {
     setRandomName(data.results[0].name.first + " " + data.results[0].name.last);
   };
 
-  const getPriceFromContract = async () => {
+  const getdefaultValuesFromContract = async () => {
     const contract = getContract(defaultProvider);
     let xPricePerUnit = await contract.xPricePerUnit();
     let pricePerUnit = await contract.pricePerUnit();
@@ -199,20 +197,48 @@ const HomePage = () => {
 
     xPricePerUnit = ethers.utils.formatEther(xPricePerUnit).toString();
     pricePerUnit = ethers.utils.formatEther(pricePerUnit).toString();
+
+    xPricePerUnit = parseFloat(xPricePerUnit);
+    pricePerUnit = parseFloat(pricePerUnit);
+
     setXPricePerUnit(xPricePerUnit);
     setPricePerUnit(pricePerUnit);
-    setCustomSignatureUnits(customSignatureUnits)
+    setCustomSignatureUnits(customSignatureUnits);
+  };
+
+  const getUserExistingMintedSignature = async (itemId) => {
+    if (!address) return;
+    const contract = getContract(defaultProvider);
+    const existingSignature = await contract.getSignature(address);
+    let ipfsHash = existingSignature[1];
+    ipfsHash = ipfsHash.replace("ipfs://", "");
+    const meta = await retrieveDataFromIPFS(ipfsHash);
+    const currentSignature = {
+      ...meta.data,
+      ipfs_url:
+        IPFS_RETRIEVE_URL +
+        meta.data.image.replace("https://ipfs.io/ipfs/", ""),
+      mintedOn: new Date(meta.data.attributes[1].value),
+      openseaNFT: `${OPENSEA_LINK}/${itemId - 1}`,
+    };
+    setExistingSignature(currentSignature);
+    setIsLoading(false);
+    setShowConfetti(true);
+    setIsEligibleToMint(false);
   };
 
   const getUserInformation = async () => {
+    setIsLoading(true);
     const contract = getContract(defaultProvider);
     const isEligibleToDiscount = await contract.checkElegibleMember(address);
     const isEligibleToMint = await contract.addressToSignature(address);
     if (isEligibleToMint.toString() === "0") {
       setIsEligibleToMint(true);
+      setExistingSignature(null);
+      setIsLoading(false);
     } else {
       // User has already minted the token
-      setShowConfetti(true);
+      await getUserExistingMintedSignature(isEligibleToMint);
     }
     setIsEligibleToDiscount(isEligibleToDiscount);
   };
@@ -224,6 +250,66 @@ const HomePage = () => {
       );
     }
     return <h1 sx={styles.signatureText}>{signature || randomName}</h1>;
+  };
+
+  const renderCanvasInput = () =>
+    toggleHandSignature ? (
+      <CanvasSignature ref={handwrittenCanvasRef} />
+    ) : (
+      renderTextSignature()
+    );
+
+  const renderInput = () =>
+    !existingSignature ? (
+      <>
+        <Input
+          type="text"
+          placeholder="Enter Your Signature"
+          value={signature || ""}
+          onChange={onChangeTextSignature}
+        />
+        <Button onClick={onClaimNFT}>Claim NFT</Button>
+      </>
+    ) : (
+      <Text as="h3">
+        Our minions report that you have already minted your signature NFT
+        {existingSignature &&
+          " on " +
+            existingSignature.mintedOn.toDateString() +
+            " at " +
+            existingSignature.mintedOn.toLocaleTimeString()}
+      </Text>
+    );
+
+  const renderButton = () => {
+    if (existingSignature) {
+      return (
+        <>
+          <a href={existingSignature.openseaNFT} target="_blank">
+            <Button variant="secondary">
+              Check you signature NFT at Opensea
+            </Button>
+          </a>
+          <a href={OPENSEA_COLLECTION_LINK} target="_blank">
+            <Button>Check Collection at Opensea</Button>
+          </a>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Button
+          onClick={() => setToggleHandSignature((prevState) => !prevState)}
+          variant="secondary"
+        >
+          {toggleHandSignature
+            ? "Type your signature "
+            : "Create your own custom handwritten signature"}
+        </Button>
+        <Button onClick={clearSignature}>Clear</Button>
+      </>
+    );
   };
 
   const getTextCanvasSignature = () => {
@@ -251,26 +337,75 @@ const HomePage = () => {
     setOpenModal((prevState) => !prevState);
   };
 
-  const onChangeSize = (e) => {
-    const priceValue = e.target.value
-    if (!priceValue) return
-    let calculatePriceValue = calculateSignatureSizePrice(customSignatureUnits, priceValue)
+  const calaculateTextSingaturePriceValue = (currentSignature) => {
+    let price;
+    if (isEligibleToDiscount) {
+      price = currentSignature.length * pricePerUnit;
+    } else {
+      price = currentSignature.length * xPricePerUnit;
+    }
+    setSignature(currentSignature);
+    setTotalPrice(price.toFixed(3));
+  };
+
+  const onChangeTextSignature = (event) => {
+    const signature = event.target.value;
+    calaculateTextSingaturePriceValue(signature);
+  };
+
+  const calaculateHandwrittenSingaturePriceValue = (currentSize) => {
+    let calculatePriceValue = calculateSignatureSizePrice(
+      customSignatureUnits,
+      currentSize
+    );
     if (isEligibleToDiscount) {
       calculatePriceValue *= pricePerUnit;
     } else {
       calculatePriceValue *= xPricePerUnit;
     }
     setTotalPrice(calculatePriceValue.toFixed(3));
-  }
+  };
+
+  const onChangeHandwrittenSignatureSize = (e) => {
+    const currentSize = e.target.value;
+    calaculateHandwrittenSingaturePriceValue(currentSize);
+  };
+
+  const LoaderComponent = (
+    <>
+      <Flex>
+        <Text as="h3">Please wait while our minions get some info...</Text>
+        <Loader
+          sx={styles.loader}
+          type="TailSpin"
+          color="#FFC059"
+          height={25}
+          width={25}
+        />
+      </Flex>
+    </>
+  );
 
   useEffect(() => {
-    if (!address) return;
+    if (toggleHandSignature) {
+      calaculateHandwrittenSingaturePriceValue("small"); //default size is 'small'
+      return;
+    }
+    calaculateTextSingaturePriceValue(signature);
+  }, [toggleHandSignature]);
+
+  useEffect(() => {
+    if (showConfetti) setShowConfetti(false);
+    if (!address) {
+      setExistingSignature(null);
+      return;
+    }
     getUserInformation();
   }, [address]);
 
   useEffect(() => {
     getRandomName();
-    getPriceFromContract();
+    getdefaultValuesFromContract();
   }, []);
 
   return (
@@ -283,59 +418,45 @@ const HomePage = () => {
             <Box sx={styles.bannerContent}>
               <Heading as="h1">Get Your Own Personalized NFT Signature</Heading>
               <Text as="p">
-                Get your tests delivered at let home collect sample from the
-                victory of the managements that supplies best design system
-                guidelines ever.
+                Your NFT Signature is an identity you can use in the Web3 world,
+                any way you want!
               </Text>
               <Flex as="form" sx={styles.signatureForm}>
-                <Input
-                  type="text"
-                  placeholder="Enter Your Signature"
-                  value={signature || ""}
-                  onChange={onChangeSignature}
-                />
-                <Button disable onClick={onClaimNFT}>
-                  Claim NFT
-                </Button>
+                {isLoading ? LoaderComponent : renderInput()}
               </Flex>
 
               {/* <Button onClick={testModal}>TesModal</Button> */}
-
-              <Flex as="form" sx={styles.signatureForm}>
-                <Text as="p">
-                  <strong>
-                    {isEligibleToDiscount
-                      ? "Elegible for a discount"
-                      : "Not elegible for a discount "}
-                  </strong>
-                  &nbsp;
-                </Text>
-                <Text as="p">MATIC to pay : {totalPrice}</Text>
-              </Flex>
+              {!existingSignature && (
+                <Flex as="form" sx={styles.signatureForm}>
+                  <Text as="p">
+                    <strong>
+                      {isEligibleToDiscount
+                        ? "Elegible for a discount"
+                        : "Not elegible for a discount "}
+                    </strong>
+                    &nbsp;
+                  </Text>
+                  <Text as="p">MATIC to pay : {totalPrice}</Text>
+                </Flex>
+              )}
             </Box>
             <Box>
               <Flex as="figure" sx={styles.bannerImage}>
-                {toggleHandSignature ? (
-                  <CanvasSignature ref={handwrittenCanvasRef} />
+                {existingSignature && existingSignature.ipfs_url ? (
+                  <Image src={existingSignature.ipfs_url} />
                 ) : (
-                  renderTextSignature()
+                  renderCanvasInput()
                 )}
               </Flex>
-              {toggleHandSignature && <Flex as="form" sx={styles.sizeRadio}>
-                <RadioSelect
-                  onSizeChange={onChangeSize}
-                />
-              </Flex>}
+              {toggleHandSignature && !existingSignature && (
+                <Flex as="form" sx={styles.sizeRadio}>
+                  <RadioSelect
+                    onSizeChange={onChangeHandwrittenSignatureSize}
+                  />
+                </Flex>
+              )}
             </Box>
-            <Button
-              onClick={() => setToggleHandSignature((prevState) => !prevState)}
-              variant="secondary"
-            >
-              {toggleHandSignature
-                ? "Type your signature "
-                : "Create your own custom handwritten signature"}
-            </Button>
-            <Button onClick={clearSignature}>Clear</Button>
+            {renderButton()}
           </Box>
         </Container>
       </Box>
@@ -353,6 +474,7 @@ const styles = {
   },
   contentWrapper: {
     gap: ["50px 50px"],
+    mt: "10%",
     display: ["block", null, null, null, "grid"],
     gridTemplateColumns: [null, null, null, null, "1fr 1fr", "0.95fr 1.05fr"],
     alignItems: "center",
@@ -360,6 +482,12 @@ const styles = {
     pt: [null, null, null, 8, 0, 9, null],
     "@media only screen and (min-width:1900px)": {
       pt: 10,
+    },
+    a: {
+      textDecoration: "none",
+      button: {
+        width: "100%",
+      },
     },
   },
   bannerContent: {
@@ -408,6 +536,9 @@ const styles = {
       fontSize: [0, 1, null, null, 2],
       minHeight: [40, 50, null, null, null, 60],
     },
+  },
+  loader: {
+    marginLeft: "1em",
   },
   sizeRadio: {
     mt: "2%",

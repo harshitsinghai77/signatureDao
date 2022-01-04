@@ -1,3 +1,4 @@
+import axios from "axios";
 import { create } from "ipfs-http-client";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -8,6 +9,7 @@ const ifpsConfig = {
 };
 
 const ipfs = create(ifpsConfig);
+export const IPFS_RETRIEVE_URL = "https://ipfs.infura.io:5001/api/v0/cat?arg=";
 
 export const exportSignatureAsSVG = (signature) => {
   const imgSVG = (
@@ -34,7 +36,7 @@ export const exportSignatureAsSVG = (signature) => {
   return renderToStaticMarkup(imgSVG);
 };
 
-export const exportSignatureAsPNG = async (base64EncodedImage) => {
+export const exportSignatureAsPNGFile = async (base64EncodedImage) => {
   const fetchSignature = await fetch(base64EncodedImage);
   const blob = await fetchSignature.blob();
   const file = new File([blob], "something.png", { type: "image/png" });
@@ -49,6 +51,11 @@ export const convertToBuffer = async (svgElement) => {
 export const addDataToIPFS = async (metadata) => {
   const hash = await ipfs.add(metadata);
   return hash.cid.toString();
+};
+
+export const retrieveDataFromIPFS = async (ipfsHash) => {
+  const result = await axios.get(IPFS_RETRIEVE_URL + ipfsHash);
+  return result;
 };
 
 export const createNFTMeta = (imgHash, signature) => {

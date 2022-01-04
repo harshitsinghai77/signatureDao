@@ -10,7 +10,7 @@ import AppFeature from "sections/app-feature";
 import Dashboard from "sections/dashboard";
 import Pricing from "sections/pricing";
 import Testimonials from "sections/testimonials";
-import Subscribe from "sections/subscribe";
+import AvailableTotalSize from "sections/available-total-size";
 import { Web3ContextProvider } from "contexts/web3-context";
 
 export default function IndexPage() {
@@ -29,7 +29,7 @@ export default function IndexPage() {
           <Dashboard />
           {/* <Pricing /> */}
           {/* <Testimonials /> */}
-          <Subscribe />
+          <AvailableTotalSize />
         </Layout>
       </Web3ContextProvider>
     </ThemeProvider>

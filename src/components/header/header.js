@@ -13,6 +13,7 @@ import {
   SET_WEB3_PROVIDER,
   RESET_WEB3_PROVIDER,
   SET_CHAIN_ID,
+  SET_ADDRESS,
 } from "contexts/web3-constants";
 import { CURRENT_NETWORK } from "utils/constants";
 
@@ -77,7 +78,15 @@ export default function Header() {
         });
       };
 
+      const handleAccountChanged = (accounts) => {
+        dispatch({
+          type: SET_ADDRESS,
+          address: accounts[0],
+        });
+      }
+
       provider.on("chainChanged", handleChainChanged);
+      provider.on("accountsChanged", handleAccountChanged);
 
       // Subscription Cleanup
       return () => {
