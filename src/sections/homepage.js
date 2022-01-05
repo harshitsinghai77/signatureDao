@@ -59,6 +59,12 @@ const logos = [
   },
 ];
 
+export const txnStatusType = {
+  CONFIRMED: "CONFIRMED",
+  PENDING: "PENDING",
+  REVERTED: "REVERTED",
+};
+
 // if true then use canvas to create singature else create and use SVG as an NFT
 const enableCanvasSignature = true;
 
@@ -131,7 +137,7 @@ const HomePage = () => {
 
     setTxn({
       mintedOn: new Date().toDateString(),
-      txnStatus: "PENDING",
+      txnStatus: txnStatusType.PENDING,
       txnValue: mintValue,
       txnHash: nftTxn.hash,
       txnLink: TRANSACTION_LINK + nftTxn.hash,
@@ -152,14 +158,14 @@ const HomePage = () => {
     if (txReceipt && txReceipt.blockNumber && txReceipt.status) {
       setTxn((prevTxn) => ({
         ...prevTxn,
-        txnStatus: "CONFIRMED",
+        txnStatus: txnStatusType.CONFIRMED,
         gasUsed: txReceipt.gasUsed.toString(), //The amount of gas actually used by this transaction.
       }));
       return;
     }
     setTxn((prevTxn) => ({
       ...prevTxn,
-      txnStatus: "REVERTED",
+      txnStatus: txnStatusType.REVERTED,
       gasUsed: txReceipt.gasUsed.toString(),
     }));
   };
@@ -169,7 +175,7 @@ const HomePage = () => {
       "0x6c8ee629793671f46cab0d5571560e3f2716b6ab520fbc7994c9da3c446d9f15";
     setTxn({
       mintedOn: new Date().toDateString(),
-      txnStatus: "PENDING",
+      txnStatus: txnStatus.PENDING,
       txnValue: 1000,
       txnHash: txnHash,
       txnLink: TRANSACTION_LINK + txnHash,
@@ -272,7 +278,7 @@ const HomePage = () => {
       </>
     ) : (
       <Text as="h3">
-        Our minions report that you have already minted your signature NFT
+        Our minions report that you have succesfully minted your signature NFT
         {existingSignature &&
           " on " +
             existingSignature.mintedOn.toDateString() +
@@ -333,8 +339,13 @@ const HomePage = () => {
     setSignature(" ");
   };
 
-  const onCloseModal = () => {
+  const onCloseModal = async () => {
     setOpenModal((prevState) => !prevState);
+    if (txn && txn.txnStatus && txn.txnStatus === txnStatusType.CONFIRMED) {
+      setIsLoading(true);
+      await getUserInformation();
+      setShowConfetti(true);
+    }
   };
 
   const calaculateTextSingaturePriceValue = (currentSignature) => {

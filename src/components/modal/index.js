@@ -4,7 +4,9 @@ import { jsx, Text, Button, Box, Grid } from "theme-ui";
 import Loader from "react-loader-spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
+
+import { txnStatusType } from "../../sections/homepage";
 
 const MyModal = ({ open, txn, onClose }) => {
   const { mintedOn, txnStatus, txnValue, txnLink, gasUsed } = txn;
@@ -38,7 +40,7 @@ const MyModal = ({ open, txn, onClose }) => {
             <Box sx={styles.gridRight}>
               <span sx={styles.pendingText}>
                 {txnStatus} &nbsp;
-                {txnStatus === "PENDING" && (
+                {txnStatus === txnStatusType.PENDING && (
                   <Loader
                     type="TailSpin"
                     color="#000000"
@@ -50,7 +52,9 @@ const MyModal = ({ open, txn, onClose }) => {
               </span>
             </Box>
             <Box sx={styles.gridLeft}>Txn Fees</Box>
-            <Box sx={styles.gridRight}>{ethers.utils.formatEther(txnValue)} MATIC</Box>
+            <Box sx={styles.gridRight}>
+              {ethers.utils.formatEther(txnValue)} MATIC
+            </Box>
             {gasUsed && (
               <>
                 <Box sx={styles.gridLeft}>Gas Used</Box>
