@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+contract/node_modules
+frontend/node_modules
 /.pnp
 .pnp.js
 
@@ -18,6 +20,9 @@
 # misc
 .DS_Store
 .env*
+
+contract/.env
+frontend/.env
 
 # debug
 npm-debug.log*

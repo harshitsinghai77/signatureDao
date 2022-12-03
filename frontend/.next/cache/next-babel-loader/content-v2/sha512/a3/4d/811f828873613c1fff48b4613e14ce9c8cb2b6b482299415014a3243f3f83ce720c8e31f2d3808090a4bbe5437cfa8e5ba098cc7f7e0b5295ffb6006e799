@@ -1,0 +1,1 @@
+{"ast":null,"code":"export const calculateSignatureSizePrice = (csUnits, size) => {\n  switch (size) {\n    case \"small\":\n      return csUnits[0];\n\n    case \"medium\":\n      return csUnits[1];\n\n    case \"large\":\n      return csUnits[2];\n\n    default:\n      return 100;\n  }\n};","map":null,"metadata":{},"sourceType":"module"}
