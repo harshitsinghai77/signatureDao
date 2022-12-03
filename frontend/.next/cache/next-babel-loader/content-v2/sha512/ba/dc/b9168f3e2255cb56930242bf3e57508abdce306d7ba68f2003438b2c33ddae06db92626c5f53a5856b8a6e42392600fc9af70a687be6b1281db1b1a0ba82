@@ -1,1 +1,0 @@
-{"ast":null,"code":"export var SET_WEB3_PROVIDER = \"SET_WEB3_PROVIDER\";\nexport var SET_ADDRESS = \"SET_ADDRESS\";\nexport var SET_CHAIN_ID = \"SET_CHAIN_ID\";\nexport var RESET_WEB3_PROVIDER = \"RESET_WEB3_PROVIDER\";","map":null,"metadata":{},"sourceType":"module"}
