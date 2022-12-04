@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx, Box, Heading, Text, Button, Image } from 'theme-ui';
+import { jsx, Box, Heading, Text, Button, Image } from "theme-ui";
 
 const TabContent = ({ tabContent }) => {
   return tabContent.map((item, index) => (
@@ -7,7 +7,7 @@ const TabContent = ({ tabContent }) => {
       <Box sx={styles.content}>
         <Heading>{item.title}</Heading>
         <Text as="p">{item.description}</Text>
-        <Button>More Details</Button>
+        {/* <Button>More Details</Button> */}
       </Box>
       <Image src={item?.image} alt="celebration" sx={styles.illustration} />
     </Box>
@@ -18,20 +18,20 @@ export default TabContent;
 
 const styles = {
   tabContent: {
-    display: ['flex'],
-    flexDirection: ['column-reverse', null, null, null, 'row'],
-    alignItems: 'flex-start',
+    display: ["flex"],
+    flexDirection: ["column-reverse", null, null, null, "row"],
+    alignItems: "flex-start",
   },
   content: {
     maxWidth: [480, null, null, 580, 480],
-    ml: [null, null, null, 'auto', 'unset'],
-    mr: [0, null, null, 'auto', 10, 8, 10],
-    textAlign: [null, null, null, 'center', 'left'],
+    ml: [null, null, null, "auto", "unset"],
+    mr: [0, null, null, "auto", 10, 8, 10],
+    textAlign: [null, null, null, "center", "left"],
     h2: {
       fontWeight: 700,
       fontSize: [6, null, null, 10],
       lineHeight: 1.5,
-      letterSpacing: 'heading',
+      letterSpacing: "heading",
     },
     p: {
       fontSize: [1, null, null, 2],
@@ -43,14 +43,14 @@ const styles = {
     },
   },
   illustration: {
-    alignItems: 'flex-start',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
+    alignItems: "flex-start",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "contain",
     borderRadius: [5, null, null, 0],
-    display: 'flex',
+    display: "flex",
     // minHeight: [256, null, null, 538, 470, 510, 633],
     mb: [5, null, null, null, 5],
     height: "35em",
-    ml: [null, null, null, null, '6em'],
+    ml: [null, null, null, null, "6em"],
   },
 };
